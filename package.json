@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch --passWithNoTests",
     "lint": "eslint --fix src",
     "prepare": "husky install"
   },
