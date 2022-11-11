@@ -4,11 +4,12 @@ import { Modal, Props as ModalProps } from '.'
 
 function renderComponent({
   onCancel,
-  onConfirm
-}: Partial<Pick<ModalProps, 'onCancel' | 'onConfirm'>>) {
+  onConfirm,
+  isOpen,
+}: Partial<Pick<ModalProps, 'onCancel' | 'onConfirm' | 'isOpen'>>) {
   return render(
     <Modal
-      isOpen
+      isOpen={isOpen ?? true}
       title="Modal Title"
       content="Modal content"
       onConfirm={onConfirm ?? jest.fn()}
@@ -18,6 +19,20 @@ function renderComponent({
 }
 
 describe('<Modal />', () => {
+  it('should not render component', () => {
+    renderComponent({ isOpen: false })
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByText(/modal title/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/modal content/i)).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /cancelar/i })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /confirmar/i })
+    ).not.toBeInTheDocument()
+  })
+
   it('should render correctly', () => {
     renderComponent({})
 
