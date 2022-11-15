@@ -1,13 +1,8 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Tag,
-  TagLabel,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Flex, Heading, Tag, TagLabel, Text } from '@chakra-ui/react'
+import { Button } from 'components/Button'
+import { Modal } from 'components/Modal'
 import Image from 'next/image'
+import { useState } from 'react'
 
 export type Props = {
   id: string
@@ -30,8 +25,15 @@ export function DonationCard({
   description,
   image,
   title,
-  controls,
+  controls
 }: Props) {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  function handleConfirm() {
+    controls.onDelete(id)
+    setIsModalVisible(false)
+  }
+
   return (
     <Box
       maxWidth={400}
@@ -73,31 +75,42 @@ export function DonationCard({
       </Box>
       {controls && (
         <Flex marginTop={4} justifyContent="end">
-          <Button
-            colorScheme="green"
-            size="sm"
-            variant="outline"
-            textTransform="uppercase"
-            borderRadius={0}
-            fontSize="small"
-            onClick={() => controls.onEdit(id)}
-          >
+          <Button size="sm" variant="ghost" onClick={() => controls.onEdit(id)}>
             Editar
           </Button>
           <Button
-            colorScheme="red"
             size="sm"
-            variant="outline"
-            textTransform="uppercase"
-            marginLeft={4}
-            borderRadius={0}
+            variant="ghost"
+            marginLeft={2}
+            color="red.500"
+            colorScheme="red"
             fontSize="small"
-            onClick={() => controls.onDelete(id)}
+            onClick={() => setIsModalVisible(true)}
           >
             Deletar
           </Button>
         </Flex>
       )}
+      <Modal
+        title="Excluir doação"
+        content={<Text>Tem certeza que deseja excluir essa doação?</Text>}
+        isOpen={isModalVisible}
+        footer={
+          <Box marginTop={4}>
+            <Button
+              variant="outlined"
+              colorScheme="green"
+              marginRight={6}
+              onClick={() => setIsModalVisible(false)}
+            >
+              Cancelar
+            </Button>
+            <Button variant="solid" onClick={handleConfirm}>
+              Confirmar
+            </Button>
+          </Box>
+        }
+      />
     </Box>
   )
 }

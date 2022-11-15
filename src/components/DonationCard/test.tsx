@@ -8,7 +8,7 @@ const defaultControls = {
   },
   onDelete: () => {
     return
-  },
+  }
 }
 
 function renderComponent(
@@ -34,7 +34,7 @@ describe('<DonationCard />', () => {
     expect(screen.getByText(/eletrodoméstico/i)).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
-        name: /my donation/i,
+        name: /my donation/i
       })
     ).toBeInTheDocument()
     expect(screen.getByText(/this is the description/i)).toBeInTheDocument()
@@ -47,20 +47,60 @@ describe('<DonationCard />', () => {
     expect(screen.getByRole('button', { name: /deletar/i })).toBeInTheDocument()
   })
 
-  it('should call functions on edit and delete button click', async () => {
-    const editFunc = jest.fn()
-    const deleteFunc = jest.fn()
+  it('should display confirm modal on delete button click', async () => {
+    renderComponent({ controls: defaultControls })
 
-    renderComponent({ controls: { onEdit: editFunc, onDelete: deleteFunc } })
-
-    userEvent.click(screen.getByRole('button', { name: /editar/i }))
     userEvent.click(screen.getByRole('button', { name: /deletar/i }))
 
     await waitFor(() => {
-      expect(editFunc).toHaveBeenCalled()
-      expect(editFunc).toHaveBeenCalledWith('donationId')
-      expect(deleteFunc).toHaveBeenCalled()
-      expect(deleteFunc).toHaveBeenCalledWith('donationId')
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+  })
+
+  it('should call delete function on confirm button click', async () => {
+    const onDelete = jest.fn()
+    renderComponent({
+      controls: {
+        onEdit: jest.fn(),
+        onDelete
+      }
+    })
+
+    userEvent.click(screen.getByRole('button', { name: /deletar/i }))
+    await screen.findByRole('dialog')
+    userEvent.click(screen.getByRole('button', { name: /confirmar/i }))
+
+    await waitFor(() => {
+      expect(onDelete).toHaveBeenCalled()
+    })
+    renderComponent({ controls: defaultControls })
+  })
+
+  it('should close modal on cancel button click', async () => {
+    renderComponent({ controls: defaultControls })
+
+    userEvent.click(screen.getByRole('button', { name: /deletar/i }))
+    await screen.findByRole('dialog')
+    userEvent.click(screen.getByRole('button', { name: /cancelar/i }))
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should call edit function', async () => {
+    const onEdit = jest.fn()
+    renderComponent({
+      controls: {
+        onDelete: jest.fn(),
+        onEdit
+      }
+    })
+
+    userEvent.click(screen.getByRole('button', { name: /editar/i }))
+
+    await waitFor(() => {
+      expect(onEdit).toHaveBeenCalled()
     })
   })
 })
