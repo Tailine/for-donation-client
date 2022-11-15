@@ -1,19 +1,16 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import { Modal, Props as ModalProps } from '.'
 
 function renderComponent({
-  onCancel,
-  onConfirm,
   isOpen,
-}: Partial<Pick<ModalProps, 'onCancel' | 'onConfirm' | 'isOpen'>>) {
+  footer
+}: Partial<Pick<ModalProps, 'isOpen' | 'footer'>>) {
   return render(
     <Modal
       isOpen={isOpen ?? true}
       title="Modal Title"
       content="Modal content"
-      onConfirm={onConfirm ?? jest.fn()}
-      onCancel={onCancel ?? jest.fn()}
+      footer={footer}
     />
   )
 }
@@ -38,33 +35,11 @@ describe('<Modal />', () => {
 
     expect(screen.getByText(/modal title/i)).toBeInTheDocument()
     expect(screen.getByText(/modal content/i)).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /cancelar/i })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /confirmar/i })
-    ).toBeInTheDocument()
   })
 
-  it('should call cancel function', async () => {
-    const onCancel = jest.fn()
-    renderComponent({ onCancel })
+  it('should render modal with footer', () => {
+    renderComponent({ footer: <p>This is the footer</p> })
 
-    userEvent.click(screen.getByRole('button', { name: /cancelar/i }))
-
-    await waitFor(() => {
-      expect(onCancel).toHaveBeenCalled()
-    })
-  })
-
-  it('should call confirm function', async () => {
-    const onConfirm = jest.fn()
-    renderComponent({ onConfirm })
-
-    userEvent.click(screen.getByRole('button', { name: /confirmar/i }))
-
-    await waitFor(() => {
-      expect(onConfirm).toHaveBeenCalled()
-    })
+    expect(screen.getByText(/this is the footer/i)).toBeInTheDocument()
   })
 })
