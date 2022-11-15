@@ -12,7 +12,7 @@ export const customTheme = extendTheme({
       '600': '#43645f',
       '700': '#3E5B56',
       '800': '#293D39',
-      '900': '#151E1D',
+      '900': '#151E1D'
     },
     yellow: {
       '50': '#FEF6E6',
@@ -24,7 +24,7 @@ export const customTheme = extendTheme({
       '600': '#C58407',
       '700': '#946305',
       '800': '#634203',
-      '900': '#312102',
+      '900': '#312102'
     },
     red: {
       '50': '#F8EDED',
@@ -36,7 +36,7 @@ export const customTheme = extendTheme({
       '600': '#903C3C',
       '700': '#6C2D2D',
       '800': '#481E1E',
-      '900': '#240F0F',
-    },
-  },
+      '900': '#240F0F'
+    }
+  }
 })
