@@ -7,12 +7,15 @@ import {
   Input,
   InputProps
 } from '@chakra-ui/react'
+import { ChangeEvent, useState } from 'react'
 
 type Props = {
   formControlProps?: FormControlProps
   inputProps: Partial<Omit<InputProps, 'name' | 'id'>> & {
     name: string
     id: string
+    onValueChange(value): void
+    initialValue?: string
   }
   labelProps: Partial<Omit<FormLabelProps, 'htmlFor'>> & {
     htmlFor: string
@@ -23,31 +26,41 @@ type Props = {
 
 export function InputLabel({
   formControlProps,
-  inputProps,
+  inputProps: { onValueChange, initialValue, ...restInputProps },
   labelProps,
   errorMessage
 }: Props) {
+  const [value, setValue] = useState(initialValue)
+
+  function handleChange({ target: { value } }: ChangeEvent<HTMLInputElement>) {
+    setValue(value)
+    onValueChange(value)
+  }
+
   const { labelText, ...restLabelProps } = labelProps
   const isFieldInvalid = formControlProps?.isInvalid
-  const invalidStyle = isFieldInvalid ? { borderColor: 'red.500' } : undefined
 
   return (
     <FormControl {...formControlProps}>
-      <FormLabel color="green.700" {...restLabelProps}>
+      <FormLabel color="gray.600" {...restLabelProps}>
         {labelText}
       </FormLabel>
       <Input
-        _invalid={invalidStyle}
         boxShadow={0}
+        _hover={{
+          borderColor: 'green.800'
+        }}
         _focus={{
           borderColor: 'green.700',
           boxShadow: 'unset',
           borderWidth: 2
         }}
         borderColor="gray.500"
-        {...inputProps}
+        onChange={handleChange}
+        value={value}
+        {...restInputProps}
       />
-      {formControlProps?.isInvalid && errorMessage && (
+      {isFieldInvalid && errorMessage && (
         <FormErrorMessage>{errorMessage}</FormErrorMessage>
       )}
     </FormControl>
