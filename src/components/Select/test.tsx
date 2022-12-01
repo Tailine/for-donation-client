@@ -8,23 +8,16 @@ const options = [
 ]
 
 type Args = {
-  errorMessage: string
-  isInvalid: boolean
   onChange(value: string): void
 }
 
-function renderComponent({ errorMessage, isInvalid, onChange }: Partial<Args>) {
+function renderComponent({ onChange }: Partial<Args>) {
   return render(
     <Select
       options={options}
-      selectProps={{
-        id: 'category',
-        name: 'category',
-        onOptionChange: onChange ?? jest.fn()
-      }}
-      labelProps={{ htmlFor: 'category', labelText: 'Categoria' }}
-      errorMessage={errorMessage}
-      formControlProps={{ isInvalid }}
+      id="category"
+      name="category"
+      onOptionChange={onChange ?? jest.fn()}
     />
   )
 }
@@ -35,17 +28,6 @@ describe('<Select />', () => {
 
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(screen.getAllByRole('option')).toHaveLength(2)
-    expect(screen.getByLabelText(/categoria/i)).toBeInTheDocument()
-    expect(screen.getByText(/categoria/i)).toBeInTheDocument()
-  })
-
-  it('should render error message', () => {
-    renderComponent({
-      errorMessage: 'Error!',
-      isInvalid: true
-    })
-
-    expect(screen.getByText('Error!')).toBeInTheDocument()
   })
 
   it('should call onChange function on option change', async () => {
