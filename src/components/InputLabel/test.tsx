@@ -40,7 +40,7 @@ describe('<InputLabel />', () => {
   })
 
   it('should render error message for invalid input', () => {
-    renderComponent({ errorMessage: 'Something is wrong' })
+    renderComponent({ errorMessage: 'Something is wrong', isInvalid: true })
 
     expect(screen.getByText(/something is wrong/i)).toBeInTheDocument()
   })
