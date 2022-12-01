@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/react'
-import { InputLabel } from '.'
+import { Input } from '.'
 
 type Args = Partial<{
   onValueChange(): void
@@ -9,40 +9,22 @@ type Args = Partial<{
   initialValue: string
 }>
 
-function renderComponent({
-  initialValue,
-  onValueChange,
-  isInvalid = false,
-  errorMessage
-}: Args) {
+function renderComponent({ initialValue, onValueChange }: Args) {
   return render(
-    <InputLabel
-      labelProps={{ htmlFor: 'name', labelText: 'Name:' }}
-      inputProps={{
-        id: 'name',
-        name: 'name',
-        onValueChange: onValueChange ?? jest.fn(),
-        initialValue
-      }}
-      formControlProps={{ isInvalid }}
-      errorMessage={errorMessage}
+    <Input
+      id="name"
+      name="name"
+      onValueChange={onValueChange ?? jest.fn()}
+      initialValue={initialValue}
     />
   )
 }
 
-describe('<InputLabel />', () => {
+describe('<Input />', () => {
   it('renders correctly', () => {
     renderComponent({})
 
     expect(screen.getByRole('textbox')).toBeInTheDocument()
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-    expect(screen.getByText(/name/i)).toBeInTheDocument()
-  })
-
-  it('should render error message for invalid input', () => {
-    renderComponent({ errorMessage: 'Something is wrong', isInvalid: true })
-
-    expect(screen.getByText(/something is wrong/i)).toBeInTheDocument()
   })
 
   it('should call onValueChange func on input change', async () => {
