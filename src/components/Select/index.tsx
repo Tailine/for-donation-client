@@ -11,7 +11,7 @@ import { ChangeEvent } from 'react'
 
 export type Props = {
   formControlProps?: FormControlProps
-  options: { value: string; name: string }[]
+  options: { value: string; label: string }[]
   selectProps: Partial<Omit<SelectProps, 'name' | 'id'>> & {
     name: string
     id: string
@@ -40,18 +40,19 @@ export function Select({
 
   const selectOptions = options.map((option) => (
     <option key={option.value} value={option.value}>
-      {option.name}
+      {option.label}
     </option>
   ))
 
   const { labelText, ...restLabelProps } = labelProps
   return (
     <FormControl isInvalid={isFieldInvalid}>
-      <FormLabel color="gray.600" {...restLabelProps}>
+      <FormLabel color="gray.500" {...restLabelProps}>
         {labelText}
       </FormLabel>
       <ChakraSelect
         placeholder={placeholder}
+        transition="all 100ms"
         boxShadow={0}
         _hover={{
           borderColor: 'green.800'
@@ -62,6 +63,7 @@ export function Select({
           borderWidth: 2
         }}
         borderColor="gray.500"
+        borderRadius={0}
         onChange={handleChange}
         {...restSelectProps}
       >
