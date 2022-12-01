@@ -42,11 +42,12 @@ export function InputLabel({
 
   return (
     <FormControl {...formControlProps}>
-      <FormLabel color="gray.600" {...restLabelProps}>
+      <FormLabel color="gray.500" {...restLabelProps}>
         {labelText}
       </FormLabel>
       <Input
         boxShadow={0}
+        transition="all 100ms"
         _hover={{
           borderColor: 'green.800'
         }}
@@ -56,6 +57,7 @@ export function InputLabel({
           borderWidth: 2
         }}
         borderColor="gray.500"
+        borderRadius={0}
         onChange={handleChange}
         value={value}
         {...restInputProps}
