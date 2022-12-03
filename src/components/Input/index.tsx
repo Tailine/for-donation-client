@@ -4,19 +4,27 @@ import { ChangeEvent, useState } from 'react'
 type Props = Partial<Omit<InputProps, 'name' | 'id'>> & {
   name: string
   id: string
-  onValueChange(value): void
+  onValueChange(value: string): void
   initialValue?: string
+  formatInput?(value: string): string
 }
 
 export function Input({
   onValueChange,
   initialValue = '',
+  formatInput,
   ...restInputProps
 }: Props) {
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(
+    formatInput?.(initialValue) ?? initialValue ?? ''
+  )
 
   function handleChange({ target: { value } }: ChangeEvent<HTMLInputElement>) {
-    setValue(value)
+    if (formatInput) {
+      setValue(formatInput(value))
+    } else {
+      setValue(value)
+    }
     onValueChange(value)
   }
 

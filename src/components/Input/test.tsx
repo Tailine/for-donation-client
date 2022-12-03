@@ -4,18 +4,18 @@ import { Input } from '.'
 
 type Args = Partial<{
   onValueChange(): void
-  isInvalid: boolean
-  errorMessage: string
   initialValue: string
+  formatInput(): string
 }>
 
-function renderComponent({ initialValue, onValueChange }: Args) {
+function renderComponent({ initialValue, onValueChange, formatInput }: Args) {
   return render(
     <Input
       id="name"
       name="name"
       onValueChange={onValueChange ?? jest.fn()}
       initialValue={initialValue}
+      formatInput={formatInput ?? jest.fn()}
     />
   )
 }
@@ -44,5 +44,14 @@ describe('<Input />', () => {
     renderComponent({ initialValue: 'Pedro' })
 
     expect(screen.getByRole('textbox')).toHaveValue('Pedro')
+  })
+
+  it('should call format function when it is passed as prop', () => {
+    const formatFn = jest.fn()
+    renderComponent({ formatInput: formatFn })
+
+    userEvent.type(screen.getByRole('textbox'), 'Maria3242987#$#@')
+
+    expect(formatFn).toHaveBeenCalled()
   })
 })
