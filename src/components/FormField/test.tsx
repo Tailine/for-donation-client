@@ -19,7 +19,6 @@ describe('<FormField />', () => {
   it('should render correctly', () => {
     renderComponent({})
 
-    screen.debug()
     expect(screen.getByLabelText(/categoria/i)).toBeInTheDocument()
     expect(screen.getByText(/categoria/i)).toBeInTheDocument()
     expect(screen.getByRole('textbox')).toBeInTheDocument()
