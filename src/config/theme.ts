@@ -15,7 +15,7 @@ export const customTheme = extendTheme({
       '900': '#151E1D'
     },
     yellow: {
-      '50': '#FEF6E6',
+      '50': '#F9F4E8',
       '100': '#f9d99d',
       '200': '#FBD68E',
       '300': '#FAC561',
