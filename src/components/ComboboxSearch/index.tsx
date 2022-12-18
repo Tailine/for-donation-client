@@ -14,6 +14,7 @@ const styles: StylesConfig = {
     return {
       ...css,
       borderColor: props.isFocused ? '#293D39' : '#718096',
+      backgroundColor: 'transparent',
       borderRadius: 0,
       boxShadow: 'none',
       borderWidth: props.isFocused ? 2 : 1,
@@ -37,6 +38,10 @@ const styles: StylesConfig = {
   indicatorSeparator: (css) => ({
     ...css,
     display: 'none'
+  }),
+  dropdownIndicator: (css) => ({
+    ...css,
+    color: '#293D39'
   })
 }
 
