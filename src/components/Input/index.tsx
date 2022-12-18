@@ -1,12 +1,13 @@
 import { Input as ChakraInput, InputProps } from '@chakra-ui/react'
 import { ChangeEvent, useState } from 'react'
+import { PhoneMaskResult } from 'utils/phoneMask'
 
 type Props = Partial<Omit<InputProps, 'name' | 'id'>> & {
   name: string
   id: string
   onValueChange(value: string): void
   initialValue?: string
-  formatInput?(value: string): string
+  formatInput?(value: string): PhoneMaskResult
 }
 
 export function Input({
@@ -16,15 +17,18 @@ export function Input({
   ...restInputProps
 }: Props) {
   const [value, setValue] = useState(
-    formatInput?.(initialValue) ?? initialValue ?? ''
+    formatInput?.(initialValue)?.formattedValue ?? initialValue ?? ''
   )
 
   function handleChange({ target: { value } }: ChangeEvent<HTMLInputElement>) {
     if (formatInput) {
-      setValue(formatInput(value))
-    } else {
-      setValue(value)
+      const { formattedValue, originalValue } = formatInput(value)
+      setValue(formattedValue)
+      onValueChange(originalValue)
+      return
     }
+
+    setValue(value)
     onValueChange(value)
   }
 

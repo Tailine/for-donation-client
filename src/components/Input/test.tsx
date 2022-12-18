@@ -1,11 +1,12 @@
 import userEvent from '@testing-library/user-event'
 import { render, screen, waitFor } from '@testing-library/react'
 import { Input } from '.'
+import { PhoneMaskResult } from 'utils/phoneMask'
 
 type Args = Partial<{
   onValueChange(): void
   initialValue: string
-  formatInput(): string
+  formatInput(): PhoneMaskResult
 }>
 
 function renderComponent({ initialValue, onValueChange, formatInput }: Args) {
@@ -15,7 +16,7 @@ function renderComponent({ initialValue, onValueChange, formatInput }: Args) {
       name="name"
       onValueChange={onValueChange ?? jest.fn()}
       initialValue={initialValue}
-      formatInput={formatInput ?? jest.fn()}
+      formatInput={formatInput}
     />
   )
 }
