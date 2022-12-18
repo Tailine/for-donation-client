@@ -7,6 +7,12 @@ import { Input } from 'components/Input'
 import { InputPhone } from 'components/InputPhone'
 import { Select } from 'components/Select'
 import { useState } from 'react'
+import { State } from 'types'
+import { sortBy } from 'utils/sortBy'
+
+type Props = {
+  states: State[]
+}
 
 type InputFields = {
   name: string
@@ -28,7 +34,7 @@ const initalValues = {
   confirmPassword: ''
 }
 
-export function RegisterForm() {
+export function RegisterForm({ states }: Props) {
   const [formInput, setFormInput] = useState<InputFields>(initalValues)
 
   function onSubmit() {
@@ -38,6 +44,13 @@ export function RegisterForm() {
   function handleInputChange(name: keyof InputFields, value: string) {
     setFormInput({ ...formInput, [name]: value })
   }
+
+  const stateOptions = states
+    .sort((a, b) => sortBy<State>(a, b, 'name'))
+    .map((state) => ({
+      value: state.id.toString(),
+      label: state.name
+    }))
 
   console.log({ formInput })
 
@@ -96,7 +109,7 @@ export function RegisterForm() {
           <Select
             id="state"
             name="state"
-            options={[]}
+            options={stateOptions}
             onOptionChange={(value) => handleInputChange('city', value)}
           />
         </FormField>
