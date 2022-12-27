@@ -3,3 +3,8 @@ export type State = {
   acronym: string
   name: string
 }
+
+export type City = {
+  id: number
+  name: string
+}
