@@ -4,12 +4,29 @@ import { State } from 'domain/types'
 import { renderWithQueryClient } from 'utils/renderWithQueryClient'
 import { RegisterForm } from '.'
 import { useCities } from '../../hooks/useCities'
+import { useRegisterUser } from '../../hooks/useRegisterUser'
+import { useCustomToast } from 'hooks/useCustomToast'
 
 jest.mock('../../hooks/useCities', () => ({
   useCities: jest.fn(() => ({
     data: undefined,
     isLoading: true,
     isError: false
+  }))
+}))
+
+jest.mock('../../hooks/useCustomToast', () => ({
+  useCustomToast: jest.fn(() => ({
+    showToast: jest.fn()
+  }))
+}))
+
+jest.mock('../../hooks/useRegisterUser', () => ({
+  useRegisterUser: jest.fn(() => ({
+    data: undefined,
+    isLoading: false,
+    isError: false,
+    registerUser: jest.fn()
   }))
 }))
 
@@ -31,6 +48,27 @@ const mockStates: State[] = [
 
 function renderComponent(states: State[] = []) {
   return renderWithQueryClient(<RegisterForm states={states} />)
+}
+
+async function fillOutForm() {
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /estado/i }),
+    'Bahia'
+  )
+
+  await waitFor(() => {
+    expect(screen.getByLabelText(/cidade/i)).not.toBeDisabled()
+  })
+  await userEvent.click(screen.getByLabelText(/cidade/i))
+  userEvent.click(screen.getByText('Salvador'))
+  await userEvent.type(screen.getByRole('textbox', { name: /nome/i }), 'Maria')
+  await userEvent.type(
+    screen.getByRole('textbox', { name: /email/i }),
+    'maria@gmail.com'
+  )
+  await userEvent.type(screen.getByLabelText(/telefone/i), '71985642235')
+  await userEvent.type(screen.getByTestId('input-password'), 'Senh@123')
+  await userEvent.type(screen.getByTestId('input-confirm-password'), 'Senh@123')
 }
 
 describe('<RegisterForm />', () => {
@@ -116,7 +154,7 @@ describe('<RegisterForm />', () => {
     })
     describe('name input', () => {
       it('when name is empty', async () => {
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Nome deve ter pelo menos 2 caracteres'))
@@ -125,7 +163,7 @@ describe('<RegisterForm />', () => {
 
       it('when name has less than two characters', async () => {
         await userEvent.type(screen.getByRole('textbox', { name: 'Nome' }), 'L')
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Nome deve ter pelo menos 2 caracteres'))
@@ -137,7 +175,7 @@ describe('<RegisterForm />', () => {
           screen.getByRole('textbox', { name: 'Nome' }),
           'Luan23'
         )
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Insira apenas letras'))
@@ -147,7 +185,7 @@ describe('<RegisterForm />', () => {
 
     describe('email input', () => {
       it('when email is empty', async () => {
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Email inválido'))
@@ -159,7 +197,7 @@ describe('<RegisterForm />', () => {
           screen.getByRole('textbox', { name: 'Nome' }),
           'invalid@email'
         )
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Email inválido'))
@@ -169,7 +207,7 @@ describe('<RegisterForm />', () => {
 
     describe('phone input', () => {
       it('when phone is empty', async () => {
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Número de telefone inválido'))
@@ -181,7 +219,7 @@ describe('<RegisterForm />', () => {
           screen.getByRole('textbox', { name: 'Telefone' }),
           '5646'
         )
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Número de telefone inválido'))
@@ -191,7 +229,7 @@ describe('<RegisterForm />', () => {
 
     describe('state select', () => {
       it('when state is not selected', async () => {
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Estado obrigatório'))
@@ -201,7 +239,7 @@ describe('<RegisterForm />', () => {
 
     describe('city select', () => {
       it('when city is not selected', async () => {
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Cidade obrigatória'))
@@ -211,7 +249,7 @@ describe('<RegisterForm />', () => {
 
     describe('password fields', () => {
       it('when fields are empty', async () => {
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Digite uma senha'))
@@ -221,7 +259,7 @@ describe('<RegisterForm />', () => {
 
       it('when password does not match conditions', async () => {
         await userEvent.type(screen.getByTestId('input-password'), '1234')
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Senha inválida')).toBeInTheDocument()
@@ -238,7 +276,7 @@ describe('<RegisterForm />', () => {
           screen.getByTestId('input-confirm-password'),
           '21380'
         )
-        userEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+        userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
         await waitFor(() => {
           expect(screen.getByText('Senhas não coincidem'))
@@ -247,5 +285,69 @@ describe('<RegisterForm />', () => {
     })
   })
 
-  it.todo('should submit form')
+  describe('form submission', () => {
+    beforeEach(() => {
+      ;(useCities as jest.Mock).mockImplementationOnce(() => ({
+        isLoading: false,
+        isError: false,
+        data: mockCities
+      }))
+    })
+
+    it('should display error message on form submit error', async () => {
+      ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: true,
+        registerUser: jest.fn()
+      }))
+      renderComponent(mockStates)
+
+      await fillOutForm()
+
+      userEvent.click(screen.getByRole('button', { name: 'Criar' }))
+
+      expect(useRegisterUser).toHaveBeenCalled()
+
+      await waitFor(() => {
+        expect(useCustomToast).toHaveBeenCalled()
+      })
+    })
+
+    it('should disable form when loading is true', () => {
+      ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
+        data: undefined,
+        isLoading: true,
+        isError: false,
+        registerUser: jest.fn()
+      }))
+      renderComponent(mockStates)
+
+      expect(screen.getByLabelText(/nome/i)).toBeDisabled()
+      expect(screen.getByLabelText(/email/i)).toBeDisabled()
+      expect(screen.getByLabelText(/telefone/i)).toBeDisabled()
+      expect(screen.getByLabelText(/estado/i)).toBeDisabled()
+      expect(screen.getByLabelText(/cidade/i)).toBeDisabled()
+      expect(screen.getByLabelText('Senha')).toBeDisabled()
+      expect(screen.getByLabelText(/confirmar senha/i)).toBeDisabled()
+    })
+
+    it('should display success message when call to registerUser returns data', async () => {
+      ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
+        data: { message: 'Sucesso' },
+        isLoading: true,
+        isError: false,
+        registerUser: jest.fn()
+      }))
+      renderComponent(mockStates)
+
+      expect(
+        screen.getByAltText('image of a green check mark')
+      ).toBeInTheDocument()
+      expect(screen.getByText(/conta criada com sucesso/i)).toBeInTheDocument()
+      expect(screen.queryByRole('link')).toBeInTheDocument()
+      expect(screen.queryByRole('link')).toHaveAttribute('href', '/sign-in')
+      expect(screen.queryByRole('form')).not.toBeInTheDocument()
+    })
+  })
 })

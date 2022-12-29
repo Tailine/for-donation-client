@@ -6,12 +6,15 @@ import { Input } from 'components/Input'
 import { InputPhone } from 'components/InputPhone'
 import { Select } from 'components/Select'
 import { useCities } from 'hooks/useCities'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { State } from 'domain/types'
 import { sortBy } from 'utils/sortBy'
 import { isEmail } from 'utils/isEmail'
 import { isValidPassword } from 'utils/isValidPassword'
 import { PasswordPatternMsg } from 'components/PasswordPatternMsg'
+import { useRegisterUser } from 'hooks/useRegisterUser'
+import { useCustomToast } from 'hooks/useCustomToast'
+import { CreateAccountSuccess } from './CreateAccountSuccess'
 
 type Props = {
   states: State[]
@@ -79,10 +82,15 @@ export function RegisterForm({ states }: Props) {
   const [formInput, setFormInput] = useState<InputFields>(initalValues)
   const [errors, setErrors] = useState<FieldErrors>({})
   const { data, isError, isLoading } = useCities(selectedState, !!selectedState)
+  const {
+    data: registerUserData,
+    isError: isErrorRegisterUser,
+    isLoading: isLoadingRegisterUser,
+    registerUser
+  } = useRegisterUser()
+  const { showToast } = useCustomToast({})
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault()
-
+  function validateFormInput() {
     const nameValidation = validateName(formInput.name)
     const isEmailValid = isEmail(formInput.email)
     const phoneValidation = validatePhone(formInput.phone)
@@ -109,7 +117,7 @@ export function RegisterForm({ states }: Props) {
       'Repita a senha'
     )
 
-    const errorObj: FieldErrors = {
+    const formInputError: FieldErrors = {
       ...(!nameValidation.isValid && { name: nameValidation.message }),
       ...(!isEmailValid && { email: 'Email inválido' }),
       ...(!phoneValidation.isValid && { phone: phoneValidation.message }),
@@ -131,7 +139,28 @@ export function RegisterForm({ states }: Props) {
           hasMatchingPasswords: 'Senhas não coincidem'
         })
     }
-    setErrors(errorObj)
+    setErrors(formInputError)
+
+    return formInputError
+  }
+
+  function isFormInputValid() {
+    return !Object.keys(validateFormInput()).length
+  }
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault()
+
+    if (isFormInputValid()) {
+      registerUser({
+        name: formInput.name,
+        email: formInput.email,
+        phone: formInput.phone,
+        city: formInput.city,
+        state: formInput.state,
+        password: formInput.password
+      })
+    }
   }
 
   function handleInputChange(
@@ -139,6 +168,12 @@ export function RegisterForm({ states }: Props) {
   ) {
     setFormInput({ ...formInput, ...input })
   }
+
+  useEffect(() => {
+    if (isErrorRegisterUser) {
+      showToast('Erro ao criar conta, tente novamente mais tarde', 'error')
+    }
+  }, [isErrorRegisterUser])
 
   const stateOptions = states
     .sort((a, b) => sortBy<State>(a, b, 'name'))
@@ -151,155 +186,165 @@ export function RegisterForm({ states }: Props) {
     isLoading || isError
       ? []
       : data.map((city) => ({ label: city.name, value: city.name }))
+
+  if (registerUserData) {
+    return <CreateAccountSuccess />
+  }
+
   return (
     <form onSubmit={onSubmit}>
-      <Stack
-        direction="column"
-        spacing={6}
-        backgroundColor="yellow.50"
-        padding={4}
-      >
-        <FormField
-          formControlProps={{
-            isInvalid: Boolean(errors?.name)
-          }}
-          errorMessage={errors?.name}
-          labelProps={{
-            htmlFor: 'name',
-            labelText: 'Nome'
-          }}
+      <fieldset disabled={isLoadingRegisterUser}>
+        <Stack
+          direction="column"
+          spacing={6}
+          backgroundColor="yellow.50"
+          padding={4}
         >
-          <Input
-            id="name"
-            name="name"
-            onValueChange={(value) => handleInputChange({ name: value })}
-          />
-        </FormField>
-
-        <FormField
-          formControlProps={{
-            isInvalid: Boolean(errors?.email)
-          }}
-          errorMessage={errors?.email}
-          labelProps={{
-            htmlFor: 'email',
-            labelText: 'Email'
-          }}
-        >
-          <Input
-            id="email"
-            name="email"
-            onValueChange={(value) => handleInputChange({ email: value })}
-          />
-        </FormField>
-
-        <FormField
-          formControlProps={{
-            isInvalid: Boolean(errors?.phone)
-          }}
-          errorMessage={errors?.phone}
-          labelProps={{
-            htmlFor: 'phone',
-            labelText: 'Telefone'
-          }}
-        >
-          <InputPhone
-            id="phone"
-            name="phone"
-            onValueChange={(value) => handleInputChange({ phone: value })}
-          />
-        </FormField>
-        <FormField
-          formControlProps={{
-            isInvalid: Boolean(errors?.state)
-          }}
-          errorMessage={errors?.state}
-          labelProps={{
-            htmlFor: 'state',
-            labelText: 'Estado'
-          }}
-        >
-          <Select
-            placeholder="Selecione um estado"
-            id="state"
-            name="state"
-            value={formInput.state}
-            options={stateOptions}
-            onOptionChange={(value) => {
-              handleInputChange({ state: value, city: '' })
-              setSelectedState(value)
+          <FormField
+            formControlProps={{
+              isInvalid: Boolean(errors?.name)
             }}
-          />
-        </FormField>
-        <FormField
-          formControlProps={{
-            isInvalid: Boolean(errors?.city)
-          }}
-          errorMessage={errors?.city}
-          labelProps={{
-            htmlFor: 'city',
-            labelText: 'Cidade'
-          }}
-        >
-          <ComboboxSearch
-            key={selectedState}
-            placeholder="Selecione uma cidade"
-            id="city"
-            name="city"
-            ariaLabel="Cidade"
-            isDisabled={isLoading}
-            isInvalid={Boolean(errors?.city)}
-            options={cityOptions}
-            onChange={(value) => handleInputChange({ city: value })}
-          />
-        </FormField>
-        <FormField
-          formControlProps={{
-            isInvalid: Boolean(errors?.password)
-          }}
-          errorMessage={errors?.password}
-          labelProps={{
-            htmlFor: 'password',
-            labelText: 'Senha'
-          }}
-        >
-          <Input
-            value={formInput.password}
-            data-testid="input-password"
-            id="password"
-            type="password"
-            name="password"
-            onValueChange={(value) => handleInputChange({ password: value })}
-          />
-        </FormField>
-        <FormField
-          formControlProps={{
-            isInvalid:
-              Boolean(errors?.confirmPassword) ||
-              Boolean(errors?.hasMatchingPasswords)
-          }}
-          errorMessage={errors?.confirmPassword || errors?.hasMatchingPasswords}
-          labelProps={{
-            htmlFor: 'confirmPassword',
-            labelText: 'Confirmar senha'
-          }}
-        >
-          <Input
-            data-testid="input-confirm-password"
-            value={formInput.confirmPassword}
-            id="confirmPassword"
-            type="password"
-            name="confirmPassword"
-            onValueChange={(value) =>
-              handleInputChange({ confirmPassword: value })
+            errorMessage={errors?.name}
+            labelProps={{
+              htmlFor: 'name',
+              labelText: 'Nome'
+            }}
+          >
+            <Input
+              id="name"
+              name="name"
+              onValueChange={(value) => handleInputChange({ name: value })}
+            />
+          </FormField>
+
+          <FormField
+            formControlProps={{
+              isInvalid: Boolean(errors?.email)
+            }}
+            errorMessage={errors?.email}
+            labelProps={{
+              htmlFor: 'email',
+              labelText: 'Email'
+            }}
+          >
+            <Input
+              id="email"
+              name="email"
+              onValueChange={(value) => handleInputChange({ email: value })}
+            />
+          </FormField>
+
+          <FormField
+            formControlProps={{
+              isInvalid: Boolean(errors?.phone)
+            }}
+            errorMessage={errors?.phone}
+            labelProps={{
+              htmlFor: 'phone',
+              labelText: 'Telefone'
+            }}
+          >
+            <InputPhone
+              id="phone"
+              name="phone"
+              onValueChange={(value) => handleInputChange({ phone: value })}
+            />
+          </FormField>
+          <FormField
+            formControlProps={{
+              isInvalid: Boolean(errors?.state)
+            }}
+            errorMessage={errors?.state}
+            labelProps={{
+              htmlFor: 'state',
+              labelText: 'Estado'
+            }}
+          >
+            <Select
+              placeholder="Selecione um estado"
+              id="state"
+              name="state"
+              value={formInput.state}
+              options={stateOptions}
+              onOptionChange={(value) => {
+                handleInputChange({ state: value, city: '' })
+                setSelectedState(value)
+              }}
+            />
+          </FormField>
+          <FormField
+            formControlProps={{
+              isInvalid: Boolean(errors?.city)
+            }}
+            errorMessage={errors?.city}
+            labelProps={{
+              htmlFor: 'city',
+              labelText: 'Cidade'
+            }}
+          >
+            <ComboboxSearch
+              key={selectedState}
+              placeholder="Selecione uma cidade"
+              id="city"
+              name="city"
+              ariaLabel="Cidade"
+              isDisabled={isLoading}
+              isInvalid={Boolean(errors?.city)}
+              options={cityOptions}
+              onChange={(value) => handleInputChange({ city: value })}
+            />
+          </FormField>
+          <FormField
+            formControlProps={{
+              isInvalid: Boolean(errors?.password)
+            }}
+            errorMessage={errors?.password}
+            labelProps={{
+              htmlFor: 'password',
+              labelText: 'Senha'
+            }}
+          >
+            <Input
+              value={formInput.password}
+              data-testid="input-password"
+              id="password"
+              type="password"
+              name="password"
+              onValueChange={(value) => handleInputChange({ password: value })}
+            />
+          </FormField>
+          <FormField
+            formControlProps={{
+              isInvalid:
+                Boolean(errors?.confirmPassword) ||
+                Boolean(errors?.hasMatchingPasswords)
+            }}
+            errorMessage={
+              errors?.confirmPassword || errors?.hasMatchingPasswords
             }
-          />
-        </FormField>
+            labelProps={{
+              htmlFor: 'confirmPassword',
+              labelText: 'Confirmar senha'
+            }}
+          >
+            <Input
+              data-testid="input-confirm-password"
+              value={formInput.confirmPassword}
+              id="confirmPassword"
+              type="password"
+              name="confirmPassword"
+              onValueChange={(value) =>
+                handleInputChange({ confirmPassword: value })
+              }
+            />
+          </FormField>
+          {errors?.isPasswordPatternValid === false && <PasswordPatternMsg />}
 
-        {errors?.isPasswordPatternValid === false && <PasswordPatternMsg />}
-
-        <Button type="submit">Confirmar</Button>
-      </Stack>
+          <Button type="submit" isLoading={isLoadingRegisterUser}>
+            Criar
+          </Button>
+        </Stack>
+      </fieldset>
     </form>
   )
 }
