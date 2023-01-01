@@ -2,14 +2,13 @@ import { Box, Flex, Stack } from '@chakra-ui/react'
 import { Heading } from 'components/Heading'
 import { RegisterForm } from 'components/RegisterForm'
 import { State } from 'domain/types'
+import { InferGetStaticPropsType } from 'next'
 import Image from 'next/image'
 import { apiUrl } from 'utils/apiUrl'
 
-interface Props {
-  states: State[]
-}
-
-export default function SignUp({ states = [] }: Props) {
+export default function SignUp({
+  states = []
+}: InferGetStaticPropsType<typeof getServerSideProps>) {
   return (
     <Stack
       direction={{ base: 'column', lg: 'row' }}
@@ -51,13 +50,32 @@ export default function SignUp({ states = [] }: Props) {
   )
 }
 
+function isState(data: any[]): data is State[] {
+  return data.every(
+    (item) =>
+      (item as State).acronym && (item as State).id && (item as State).name
+  )
+}
+
 export async function getServerSideProps() {
-  const response = await fetch(`${apiUrl()}/place/state`)
-  const data: { data: State[] } = await response.json()
+  try {
+    const response = await fetch(`${apiUrl()}/place/state`)
+    const data = await response.json()
+
+    if (data instanceof Array && isState(data)) {
+      return {
+        props: {
+          states: data
+        }
+      }
+    }
+  } catch (err) {
+    console.error(err)
+  }
 
   return {
     props: {
-      states: data.data
+      states: []
     }
   }
 }
