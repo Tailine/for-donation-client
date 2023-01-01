@@ -1,4 +1,4 @@
-import { Grid, GridItem, Stack, Text } from '@chakra-ui/react'
+import { Box, Grid, GridItem, Stack, Text } from '@chakra-ui/react'
 import { Button } from 'components/Button'
 import { ComboboxSearch } from 'components/ComboboxSearch'
 import { FormField } from 'components/FormField'
@@ -194,192 +194,201 @@ export function RegisterForm({ states }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <fieldset disabled={isLoadingRegisterUser}>
-        <Stack
-          justifyContent="center"
-          minHeight="40vh"
-          backgroundColor="yellow.50"
-          paddingX={{ base: 4, md: 8 }}
-          paddingY={12}
-        >
-          <Grid
-            templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-            gridGap={8}
+    <Box width={{ base: 'auto', lg: '50%' }}>
+      <form onSubmit={onSubmit}>
+        <fieldset disabled={isLoadingRegisterUser}>
+          <Stack
+            justifyContent="center"
+            height={{ base: '100%', lg: '100vh' }}
+            backgroundColor="yellow.50"
+            paddingX={{ base: 4, md: 8, lg: 24 }}
+            paddingY={12}
           >
-            <FormField
-              formControlProps={{
-                isInvalid: Boolean(errors?.name)
-              }}
-              errorMessage={errors?.name}
-              labelProps={{
-                htmlFor: 'name',
-                labelText: 'Nome'
-              }}
+            <Grid
+              templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+              gridGap={8}
             >
-              <Input
-                id="name"
-                name="name"
-                onValueChange={(value) => handleInputChange({ name: value })}
-              />
-            </FormField>
-
-            <FormField
-              formControlProps={{
-                isInvalid: Boolean(errors?.phone)
-              }}
-              errorMessage={errors?.phone}
-              labelProps={{
-                htmlFor: 'phone',
-                labelText: 'Telefone'
-              }}
-            >
-              <InputPhone
-                id="phone"
-                name="phone"
-                onValueChange={(value) => handleInputChange({ phone: value })}
-              />
-            </FormField>
-
-            <GridItem colSpan={{ base: 1, md: 2 }}>
               <FormField
                 formControlProps={{
-                  isInvalid: Boolean(errors?.email)
+                  isInvalid: Boolean(errors?.name)
                 }}
-                errorMessage={errors?.email}
+                errorMessage={errors?.name}
                 labelProps={{
-                  htmlFor: 'email',
-                  labelText: 'Email'
+                  htmlFor: 'name',
+                  labelText: 'Nome'
                 }}
               >
                 <Input
-                  id="email"
-                  name="email"
-                  onValueChange={(value) => handleInputChange({ email: value })}
+                  id="name"
+                  name="name"
+                  onValueChange={(value) => handleInputChange({ name: value })}
                 />
               </FormField>
-            </GridItem>
 
-            <FormField
-              formControlProps={{
-                isInvalid: Boolean(errors?.state)
-              }}
-              errorMessage={errors?.state}
-              labelProps={{
-                htmlFor: 'state',
-                labelText: 'Estado'
-              }}
-            >
-              <Select
-                placeholder="Selecione um estado"
-                id="state"
-                name="state"
-                value={formInput.state}
-                options={stateOptions}
-                onOptionChange={(value) => {
-                  handleInputChange({ state: value, city: '' })
-                  setSelectedState(value)
+              <FormField
+                formControlProps={{
+                  isInvalid: Boolean(errors?.phone)
                 }}
-              />
-            </FormField>
-            <FormField
-              formControlProps={{
-                isInvalid: Boolean(errors?.city)
-              }}
-              errorMessage={errors?.city}
-              labelProps={{
-                htmlFor: 'city',
-                labelText: 'Cidade'
-              }}
-            >
-              <ComboboxSearch
-                key={selectedState}
-                placeholder="Selecione uma cidade"
-                id="city"
-                name="city"
-                ariaLabel="Cidade"
-                isDisabled={isLoading}
-                isInvalid={Boolean(errors?.city)}
-                options={cityOptions}
-                onChange={(value) => handleInputChange({ city: value })}
-              />
-            </FormField>
-            <FormField
-              formControlProps={{
-                isInvalid: Boolean(errors?.password)
-              }}
-              errorMessage={errors?.password}
-              labelProps={{
-                htmlFor: 'password',
-                labelText: 'Senha'
-              }}
-            >
-              <Input
-                value={formInput.password}
-                data-testid="input-password"
-                id="password"
-                type="password"
-                name="password"
-                onValueChange={(value) =>
-                  handleInputChange({ password: value })
-                }
-              />
-            </FormField>
-            <FormField
-              formControlProps={{
-                isInvalid:
-                  Boolean(errors?.confirmPassword) ||
-                  Boolean(errors?.hasMatchingPasswords)
-              }}
-              errorMessage={
-                errors?.confirmPassword || errors?.hasMatchingPasswords
-              }
-              labelProps={{
-                htmlFor: 'confirmPassword',
-                labelText: 'Confirmar senha'
-              }}
-            >
-              <Input
-                data-testid="input-confirm-password"
-                value={formInput.confirmPassword}
-                id="confirmPassword"
-                type="password"
-                name="confirmPassword"
-                onValueChange={(value) =>
-                  handleInputChange({ confirmPassword: value })
-                }
-              />
-            </FormField>
-            {errors?.isPasswordPatternValid === false && <PasswordPatternMsg />}
+                errorMessage={errors?.phone}
+                labelProps={{
+                  htmlFor: 'phone',
+                  labelText: 'Telefone'
+                }}
+              >
+                <InputPhone
+                  id="phone"
+                  name="phone"
+                  onValueChange={(value) => handleInputChange({ phone: value })}
+                />
+              </FormField>
 
-            <GridItem colStart={{ base: 1, md: 2 }} colEnd={{ base: 1, md: 2 }}>
-              <Button
-                type="submit"
-                isLoading={isLoadingRegisterUser}
-                width="100%"
-              >
-                Criar
-              </Button>
-              <Text
-                color="gray.600"
-                fontSize={12}
-                textAlign="center"
-                marginTop={4}
-              >
-                Já possui conta?{' '}
-                <Link
-                  as={NextLink}
-                  href="/sign-in"
-                  textAlign="center"
-                  color="yellow.400"
+              <GridItem colSpan={{ base: 1, md: 2 }}>
+                <FormField
+                  formControlProps={{
+                    isInvalid: Boolean(errors?.email)
+                  }}
+                  errorMessage={errors?.email}
+                  labelProps={{
+                    htmlFor: 'email',
+                    labelText: 'Email'
+                  }}
                 >
-                  Efetuar login
-                </Link>
-              </Text>
-            </GridItem>
-          </Grid>
-        </Stack>
-      </fieldset>
-    </form>
+                  <Input
+                    id="email"
+                    name="email"
+                    onValueChange={(value) =>
+                      handleInputChange({ email: value })
+                    }
+                  />
+                </FormField>
+              </GridItem>
+
+              <FormField
+                formControlProps={{
+                  isInvalid: Boolean(errors?.state)
+                }}
+                errorMessage={errors?.state}
+                labelProps={{
+                  htmlFor: 'state',
+                  labelText: 'Estado'
+                }}
+              >
+                <Select
+                  placeholder="Selecione um estado"
+                  id="state"
+                  name="state"
+                  value={formInput.state}
+                  options={stateOptions}
+                  onOptionChange={(value) => {
+                    handleInputChange({ state: value, city: '' })
+                    setSelectedState(value)
+                  }}
+                />
+              </FormField>
+              <FormField
+                formControlProps={{
+                  isInvalid: Boolean(errors?.city)
+                }}
+                errorMessage={errors?.city}
+                labelProps={{
+                  htmlFor: 'city',
+                  labelText: 'Cidade'
+                }}
+              >
+                <ComboboxSearch
+                  key={selectedState}
+                  placeholder="Selecione uma cidade"
+                  id="city"
+                  name="city"
+                  ariaLabel="Cidade"
+                  isDisabled={isLoading}
+                  isInvalid={Boolean(errors?.city)}
+                  options={cityOptions}
+                  onChange={(value) => handleInputChange({ city: value })}
+                />
+              </FormField>
+              <FormField
+                formControlProps={{
+                  isInvalid: Boolean(errors?.password)
+                }}
+                errorMessage={errors?.password}
+                labelProps={{
+                  htmlFor: 'password',
+                  labelText: 'Senha'
+                }}
+              >
+                <Input
+                  value={formInput.password}
+                  data-testid="input-password"
+                  id="password"
+                  type="password"
+                  name="password"
+                  onValueChange={(value) =>
+                    handleInputChange({ password: value })
+                  }
+                />
+              </FormField>
+              <FormField
+                formControlProps={{
+                  isInvalid:
+                    Boolean(errors?.confirmPassword) ||
+                    Boolean(errors?.hasMatchingPasswords)
+                }}
+                errorMessage={
+                  errors?.confirmPassword || errors?.hasMatchingPasswords
+                }
+                labelProps={{
+                  htmlFor: 'confirmPassword',
+                  labelText: 'Confirmar senha'
+                }}
+              >
+                <Input
+                  data-testid="input-confirm-password"
+                  value={formInput.confirmPassword}
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
+                  onValueChange={(value) =>
+                    handleInputChange({ confirmPassword: value })
+                  }
+                />
+              </FormField>
+              {errors?.isPasswordPatternValid === false && (
+                <PasswordPatternMsg />
+              )}
+
+              <GridItem
+                colStart={{ base: 1, md: 2 }}
+                colEnd={{ base: 1, md: 2 }}
+              >
+                <Button
+                  type="submit"
+                  isLoading={isLoadingRegisterUser}
+                  width="100%"
+                >
+                  Criar
+                </Button>
+                <Text
+                  color="gray.600"
+                  fontSize={12}
+                  textAlign="center"
+                  marginTop={4}
+                >
+                  Já possui conta?{' '}
+                  <Link
+                    as={NextLink}
+                    href="/sign-in"
+                    textAlign="center"
+                    color="yellow.400"
+                  >
+                    Efetuar login
+                  </Link>
+                </Text>
+              </GridItem>
+            </Grid>
+          </Stack>
+        </fieldset>
+      </form>
+    </Box>
   )
 }
