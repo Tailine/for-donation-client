@@ -45,6 +45,10 @@ function stylesOverride(isInvalid: boolean): StylesConfig {
       ...css,
       borderColor: '#293D39'
     }),
+    placeholder: (css) => ({
+      ...css,
+      whiteSpace: 'nowrap'
+    }),
     option: (css, props) => ({
       ...css,
       backgroundColor: props.isSelected
