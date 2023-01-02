@@ -4,7 +4,10 @@ import { InputPhone } from '.'
 
 jest.mock('utils/phoneMask', () => {
   return {
-    phoneMask: () => '71 99999-9999'
+    phoneMask: () => ({
+      originalValue: '71999999999',
+      formattedValue: '71 99999-9999'
+    })
   }
 })
 

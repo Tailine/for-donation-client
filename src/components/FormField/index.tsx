@@ -26,7 +26,9 @@ export function FormField({
 
   return (
     <FormControl {...formControlProps}>
-      <FormLabel {...restLabelProps}>{labelText}</FormLabel>
+      <FormLabel color="gray.600" {...restLabelProps}>
+        {labelText}
+      </FormLabel>
       {children}
       {isFieldInvalid && errorMessage && (
         <FormErrorMessage>{errorMessage}</FormErrorMessage>
