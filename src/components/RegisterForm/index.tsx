@@ -17,6 +17,7 @@ import { useCustomToast } from 'hooks/useCustomToast'
 import { CreateAccountSuccess } from './CreateAccountSuccess'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/react'
+import { MAX_PHONE_LEN, MIN_PHONE_LEN } from 'utils/constants'
 
 type Props = {
   states: State[]
@@ -61,7 +62,7 @@ function validateName(name: string) {
 }
 
 function validatePhone(phone: string) {
-  if (![10, 11].includes(phone.length)) {
+  if (![MIN_PHONE_LEN, MAX_PHONE_LEN].includes(phone.length)) {
     return {
       isValid: false,
       message: 'Número de telefone inválido'
