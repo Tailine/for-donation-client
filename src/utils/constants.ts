@@ -1,2 +1,5 @@
-export const MIN_PHONE_LEN = 10
-export const MAX_PHONE_LEN = 11
+const MIN_PHONE_LEN = 10
+const MAX_PHONE_LEN = 11
+const DEFAULT_ERROR_MESSAGE = 'Algo deu errado!'
+
+export { MAX_PHONE_LEN, MIN_PHONE_LEN, DEFAULT_ERROR_MESSAGE }
