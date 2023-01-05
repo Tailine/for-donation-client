@@ -1,25 +1,18 @@
+import { HttpClientPort } from 'config/httpClient/port'
 import { City } from 'domain/types'
-import { apiUrl } from 'utils/apiUrl'
+import { DEFAULT_ERROR_MESSAGE } from 'utils/constants'
+import { isOfType } from 'utils/isOfType'
 
-function isCity(data: unknown[]): data is City[] {
-  return data.every(
-    (item) =>
-      (item as City).id !== undefined && (item as City).name !== undefined
-  )
-}
 export class CityService {
-  static async fetchCities(stateId: string): Promise<City[]> {
-    const response = await fetch(`${apiUrl()}/place/cities/${stateId}`)
-    const data = await response.json()
+  constructor(private readonly httpClient: HttpClientPort) {}
 
-    if (!response.ok) {
-      throw new Error('Algo deu errado.')
+  async fetchCities(stateId: string): Promise<City[]> {
+    const data = await this.httpClient.get(`/place/cities/${stateId}`)
+
+    if (!isOfType<City[]>(data, ['id', 'name'])) {
+      throw new Error(DEFAULT_ERROR_MESSAGE)
     }
 
-    if (data instanceof Array && data.length && isCity(data)) {
-      return data
-    }
-
-    return []
+    return data
   }
 }
