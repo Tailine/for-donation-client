@@ -6,7 +6,7 @@ type Props = {
 
 const headingColors = {
   yellow: 'yellow.50',
-  green: 'green.700'
+  green: 'purple.700'
 }
 
 export function Heading({ color = 'green', ...props }: Props) {

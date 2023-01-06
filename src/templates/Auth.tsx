@@ -13,7 +13,7 @@ export function Auth({ title, children }: Props) {
       direction={{ base: 'column', lg: 'row' }}
       paddingY={{ base: 20, lg: 0 }}
       paddingX={{ base: 4, lg: 0 }}
-      backgroundColor="green.800"
+      backgroundColor="purple.800"
       minH="100vh"
       justifyContent={{
         base: 'stretch'
@@ -39,12 +39,14 @@ export function Auth({ title, children }: Props) {
           <Image
             src="/donation.png"
             alt="illustration of five people behind donatio boxes"
-            width={500}
-            height={100}
+            width={700}
+            height={200}
           />
         </Box>
       </Flex>
-      <Box width={{ base: 'auto', lg: '50%' }}>{children}</Box>
+      <Box backgroundColor="gray.50" width={{ base: 'auto', lg: '50%' }}>
+        {children}
+      </Box>
     </Stack>
   )
 }

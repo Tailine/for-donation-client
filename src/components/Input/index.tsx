@@ -37,10 +37,10 @@ export function Input({
       boxShadow={0}
       transition="all 100ms"
       _hover={{
-        borderColor: 'green.800'
+        borderColor: 'purple.800'
       }}
       _focus={{
-        borderColor: 'green.700',
+        borderColor: 'purple.700',
         boxShadow: 'unset',
         borderWidth: 2
       }}

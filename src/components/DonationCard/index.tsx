@@ -41,7 +41,7 @@ export function DonationCard({
       paddingY={6}
       paddingX={4}
       border="1px"
-      borderColor="green.700"
+      borderColor="purple.700"
     >
       <Box position="relative">
         <Image width={500} height={300} alt={image.alt} src={image.url} />
@@ -52,12 +52,12 @@ export function DonationCard({
           backgroundColor="yellow.100"
           border="2px"
           borderRadius={0}
-          borderColor="green.700"
+          borderColor="purple.700"
         >
           <TagLabel
             paddingY={{ base: 2, md: 2 }}
             paddingX={{ base: 0, md: 2 }}
-            color="green.700"
+            color="purple.700"
             fontWeight="bold"
             fontSize={{ base: 'x-small', md: 'small' }}
           >
@@ -66,7 +66,7 @@ export function DonationCard({
         </Tag>
       </Box>
       <Box>
-        <Heading color="green.700" marginY={4} size="md">
+        <Heading color="purple.700" marginY={4} size="md">
           {title}
         </Heading>
         <Text color="gray.600" fontSize="sm">
