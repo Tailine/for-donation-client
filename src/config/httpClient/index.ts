@@ -4,7 +4,7 @@ import { isOfType } from 'utils/isOfType'
 import { HttpClientPort } from './port'
 
 export class Fetch implements HttpClientPort {
-  private defaultOptions: RequestInit = {
+  private readonly defaultOptions: RequestInit = {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'
