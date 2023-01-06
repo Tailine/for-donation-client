@@ -6,7 +6,7 @@ import { Input } from 'components/Input'
 import { InputPhone } from 'components/InputPhone'
 import { Select } from 'components/Select'
 import { useCities } from 'hooks/useCities'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { State } from 'domain/types'
 import { sortBy } from 'utils/sortBy'
 import { isEmail } from 'utils/isEmail'
@@ -18,6 +18,7 @@ import { CreateAccountSuccess } from './CreateAccountSuccess'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/react'
 import { MAX_PHONE_LEN, MIN_PHONE_LEN } from 'utils/constants'
+import { validateRequired } from 'utils/validations'
 
 type Props = {
   states: State[]
@@ -72,14 +73,6 @@ function validatePhone(phone: string) {
   return { isValid: true }
 }
 
-function validateRequired(value: string, errorMessage: string) {
-  if (value) {
-    return { isValid: true }
-  }
-
-  return { isValid: false, message: errorMessage }
-}
-
 export function RegisterForm({ states }: Props) {
   const [selectedState, setSelectedState] = useState('')
   const [formInput, setFormInput] = useState<InputFields>(initalValues)
@@ -89,9 +82,10 @@ export function RegisterForm({ states }: Props) {
     data: registerUserData,
     isError: isErrorRegisterUser,
     isLoading: isLoadingRegisterUser,
+    error,
     registerUser
   } = useRegisterUser()
-  const { showToast } = useCustomToast({})
+  const { showToast } = useCustomToast()
 
   function validateFormInput() {
     const nameValidation = validateName(formInput.name)
@@ -172,11 +166,9 @@ export function RegisterForm({ states }: Props) {
     setFormInput({ ...formInput, ...input })
   }
 
-  useEffect(() => {
-    if (isErrorRegisterUser) {
-      showToast('Erro ao criar conta, tente novamente mais tarde', 'error')
-    }
-  }, [isErrorRegisterUser])
+  if (isErrorRegisterUser) {
+    showToast(error.message, 'error')
+  }
 
   const stateOptions = states
     .sort((a, b) => sortBy<State>(a, b, 'name'))
@@ -200,7 +192,6 @@ export function RegisterForm({ states }: Props) {
         <Stack
           justifyContent="center"
           height={{ base: '100%', lg: '100vh' }}
-          backgroundColor="yellow.50"
           paddingX={{ base: 4, md: 8, lg: 24 }}
           paddingY={12}
         >
@@ -221,6 +212,7 @@ export function RegisterForm({ states }: Props) {
               <Input
                 id="name"
                 name="name"
+                value={formInput.name}
                 onValueChange={(value) => handleInputChange({ name: value })}
               />
             </FormField>
@@ -238,6 +230,7 @@ export function RegisterForm({ states }: Props) {
               <InputPhone
                 id="phone"
                 name="phone"
+                value={formInput.phone}
                 onValueChange={(value) => handleInputChange({ phone: value })}
               />
             </FormField>
@@ -256,6 +249,7 @@ export function RegisterForm({ states }: Props) {
                 <Input
                   id="email"
                   name="email"
+                  value={formInput.email}
                   onValueChange={(value) => handleInputChange({ email: value })}
                 />
               </FormField>
