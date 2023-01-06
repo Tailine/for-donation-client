@@ -1,10 +1,6 @@
 import { useToast, ToastProps } from '@chakra-ui/react'
 
-type Props = {
-  duration?: number
-}
-
-export function useCustomToast({ duration = 5000 }: Props) {
+export function useCustomToast(duration = 5000) {
   const toast = useToast()
   const id = 'custom'
 
