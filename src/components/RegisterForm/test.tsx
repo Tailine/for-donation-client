@@ -11,7 +11,8 @@ jest.mock('../../hooks/useCities', () => ({
   useCities: jest.fn(() => ({
     data: undefined,
     isLoading: true,
-    isError: false
+    isError: false,
+    error: undefined
   }))
 }))
 
@@ -26,7 +27,8 @@ jest.mock('../../hooks/useRegisterUser', () => ({
     data: undefined,
     isLoading: false,
     isError: false,
-    registerUser: jest.fn()
+    registerUser: jest.fn(),
+    error: undefined
   }))
 }))
 
@@ -76,7 +78,8 @@ describe('<RegisterForm />', () => {
     ;(useCities as jest.Mock).mockImplementationOnce(() => ({
       data: undefined,
       isLoading: true,
-      isError: false
+      isError: false,
+      error: undefined
     }))
   })
   it('should render correctly', () => {
@@ -117,7 +120,8 @@ describe('<RegisterForm />', () => {
     ;(useCities as jest.Mock).mockImplementationOnce(() => ({
       isLoading: false,
       isError: false,
-      data: mockCities
+      data: mockCities,
+      error: undefined
     }))
 
     renderComponent(mockStates)
@@ -290,16 +294,23 @@ describe('<RegisterForm />', () => {
       ;(useCities as jest.Mock).mockImplementationOnce(() => ({
         isLoading: false,
         isError: false,
+        error: undefined,
         data: mockCities
       }))
     })
 
     it('should display error message on form submit error', async () => {
+      const showToast = jest.fn()
+      const registerUser = jest.fn()
+      ;(useCustomToast as jest.Mock).mockImplementation(() => ({
+        showToast
+      }))
       ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
         data: undefined,
         isLoading: false,
         isError: true,
-        registerUser: jest.fn()
+        registerUser,
+        error: new Error('Algo deu errado')
       }))
       renderComponent(mockStates)
 
@@ -307,10 +318,9 @@ describe('<RegisterForm />', () => {
 
       userEvent.click(screen.getByRole('button', { name: 'Criar' }))
 
-      expect(useRegisterUser).toHaveBeenCalled()
-
       await waitFor(() => {
-        expect(useCustomToast).toHaveBeenCalled()
+        expect(registerUser).toHaveBeenCalled()
+        expect(showToast).toHaveBeenCalled()
       })
     })
 
@@ -319,6 +329,7 @@ describe('<RegisterForm />', () => {
         data: undefined,
         isLoading: true,
         isError: false,
+        error: undefined,
         registerUser: jest.fn()
       }))
       renderComponent(mockStates)
@@ -337,6 +348,7 @@ describe('<RegisterForm />', () => {
         data: { message: 'Sucesso' },
         isLoading: true,
         isError: false,
+        error: undefined,
         registerUser: jest.fn()
       }))
       renderComponent(mockStates)
