@@ -16,15 +16,15 @@ const buttonStyles: Record<Props['variant'], ChakraButtonProps> = {
     colorScheme: 'green',
     variant: 'ghost',
     border: '1px',
-    borderColor: 'green.700',
-    color: 'green.700'
+    borderColor: 'purple.700',
+    color: 'purple.700'
   },
   solid: {
     colorScheme: 'yellow',
     variant: 'solid',
     border: '1px',
-    borderColor: 'green.700',
-    color: 'green.700',
+    borderColor: 'purple.700',
+    color: 'purple.700',
     backgroundColor: 'yellow.300'
   }
 }

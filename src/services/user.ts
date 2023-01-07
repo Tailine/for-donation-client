@@ -1,4 +1,6 @@
-import { apiUrl } from 'utils/apiUrl'
+import { isOfType } from 'utils/isOfType'
+import { HttpClientPort } from 'config/httpClient/port'
+import { DEFAULT_ERROR_MESSAGE } from 'utils/constants'
 
 export type NewUser = {
   name: string
@@ -10,24 +12,26 @@ export type NewUser = {
 }
 
 export class UserService {
-  static async registerUser(
+  constructor(private readonly httpClient: HttpClientPort) {}
+
+  async registerUser(
     newUser: NewUser
   ): Promise<{ message: string } | undefined> {
-    const response = await fetch(`${apiUrl()}/user/sign-up`, {
-      method: 'POST',
-      body: JSON.stringify(newUser),
-      headers: { 'Content-type': 'application/json; charset=UTF-8' }
+    const data = await this.httpClient.post('/user/sign-up', newUser)
+
+    if (!isOfType<{ message: string }>(data, ['message'])) {
+      throw new Error(DEFAULT_ERROR_MESSAGE)
+    }
+
+    return data
+  }
+
+  async login(email: string, password: string): Promise<boolean> {
+    const data = await this.httpClient.post('/user/sign-in', {
+      email,
+      password
     })
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.message)
-    }
 
-    const data = await response.json()
-    if (typeof data === 'object' && 'message' in data) {
-      return data
-    }
-
-    return undefined
+    return isOfType<{ message: string }>(data, ['message'])
   }
 }

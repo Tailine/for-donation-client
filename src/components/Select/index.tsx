@@ -31,10 +31,10 @@ export function Select({
       transition="all 100ms"
       boxShadow={0}
       _hover={{
-        borderColor: 'green.800'
+        borderColor: 'purple.800'
       }}
       _focus={{
-        borderColor: 'green.700',
+        borderColor: 'purple.700',
         boxShadow: 'unset',
         borderWidth: 2
       }}
