@@ -1,4 +1,3 @@
-import { ErrorResponse } from 'domain/types'
 import { DEFAULT_ERROR_MESSAGE } from 'utils/constants'
 import { isOfType } from 'utils/isOfType'
 import { HttpClientPort } from './port'
@@ -41,7 +40,7 @@ export class Fetch implements HttpClientPort {
   static async checkForError(response: Response) {
     if (!response.ok) {
       const error = await response.json()
-      if (isOfType<ErrorResponse>(error, ['message'])) {
+      if (isOfType<{ message: string }>(error, ['message'])) {
         throw new Error(error.message)
       }
       throw new Error(DEFAULT_ERROR_MESSAGE)

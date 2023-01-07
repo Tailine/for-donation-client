@@ -8,7 +8,3 @@ export type City = {
   id: number
   name: string
 }
-
-export type ErrorResponse = {
-  message: string
-}
