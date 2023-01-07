@@ -50,5 +50,8 @@ export const customTheme = extendTheme({
       '800': '#5e5656',
       '900': '#514b4b'
     }
+  },
+  breakpoints: {
+    '4k': '2560px'
   }
 })
