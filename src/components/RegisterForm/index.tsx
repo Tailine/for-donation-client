@@ -192,7 +192,7 @@ export function RegisterForm({ states }: Props) {
         <Stack
           justifyContent="center"
           height={{ base: '100%', lg: '100vh' }}
-          paddingX={{ base: 4, md: 8, lg: 24 }}
+          paddingX={{ base: 4, md: 8, lg: 12 }}
           paddingY={12}
         >
           <Grid

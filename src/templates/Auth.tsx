@@ -19,13 +19,17 @@ export function Auth({ title, children }: Props) {
         base: 'stretch'
       }}
     >
-      <Flex flexDirection="column" width={{ base: 'auto', lg: '50%' }}>
+      <Flex
+        flexDirection="column"
+        width={{ base: 'auto', lg: '50%' }}
+        alignItems={'center'}
+        justifyContent={'center'}
+      >
         <Heading
           textAlign={{ base: 'center', lg: 'start' }}
           size={{ base: 'xl', md: '2xl' }}
-          width={{ base: 'auto', lg: '68%' }}
-          marginLeft={{ base: 0, lg: 20 }}
-          paddingTop={{ base: 6, md: 0, lg: 16 }}
+          width={{ base: 'auto', lg: '68%', '4k': 'auto' }}
+          paddingTop={{ base: 6, md: 0, lg: 16, '4k': 0 }}
           color="yellow"
           marginBottom={{ base: 12 }}
         >
