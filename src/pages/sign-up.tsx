@@ -2,7 +2,6 @@ import { RegisterForm } from 'components/RegisterForm'
 import { State } from 'domain/types'
 import { InferGetStaticPropsType } from 'next'
 import { Auth } from 'templates/Auth'
-import { apiUrl } from 'utils/apiUrl'
 
 export default function SignUp({
   states = []
@@ -23,7 +22,9 @@ function isState(data: any[]): data is State[] {
 
 export async function getServerSideProps() {
   try {
-    const response = await fetch(`${apiUrl()}/place/state`)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/place/state`
+    )
     const data = await response.json()
 
     if (data instanceof Array && isState(data)) {
