@@ -62,6 +62,10 @@ describe('<LoginForm />', () => {
       'type',
       'submit'
     )
+    expect(screen.getByText('Já possui conta?')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /efetuar login/i })
+    ).toBeInTheDocument()
   })
 
   it('should display error message when inputs are invalid and should not call login function', async () => {
