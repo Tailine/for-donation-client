@@ -1,10 +1,11 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithQueryClient } from 'utils/renderWithQueryClient'
 import { LoginForm } from '.'
 import { useRouter } from 'next/router'
 import { useLogin } from 'hooks/useLogin'
 import { useCustomToast } from 'hooks/useCustomToast'
+import { CommonParams } from 'utils/testUtils'
 
 jest.mock('../../hooks/useLogin', () => ({
   useLogin: jest.fn(() => ({
@@ -12,7 +13,7 @@ jest.mock('../../hooks/useLogin', () => ({
     isLoading: false,
     isError: false,
     data: undefined,
-    error: new Error('Ocorreu um erro')
+    error: undefined
   }))
 }))
 
@@ -30,6 +31,17 @@ jest.mock('../../hooks/useCustomToast', () => ({
 
 function renderComponent() {
   return renderWithQueryClient(<LoginForm />)
+}
+
+function mockUseLogin(mock?: CommonParams & { login?(): void }) {
+  ;(useLogin as jest.Mock).mockImplementation(() => ({
+    login: jest.fn(),
+    isLoading: false,
+    isError: false,
+    data: undefined,
+    error: undefined,
+    ...mock
+  }))
 }
 
 describe('<LoginForm />', () => {
@@ -50,16 +62,15 @@ describe('<LoginForm />', () => {
       'type',
       'submit'
     )
+    expect(screen.getByText('Já possui conta?')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /efetuar login/i })
+    ).toBeInTheDocument()
   })
 
   it('should display error message when inputs are invalid and should not call login function', async () => {
     const login = jest.fn()
-    ;(useLogin as jest.Mock).mockImplementation(() => ({
-      login,
-      isLoading: false,
-      isError: false,
-      data: true
-    }))
+    mockUseLogin({ login, data: true })
     renderComponent()
 
     userEvent.click(screen.getByRole('button', { name: /entrar/i }))
@@ -75,33 +86,27 @@ describe('<LoginForm />', () => {
     const push = jest.fn()
     const login = jest.fn()
     ;(useRouter as jest.Mock).mockImplementation(() => ({ push }))
-    ;(useLogin as jest.Mock).mockImplementation(() => ({
-      login,
-      isLoading: false,
-      isError: false,
-      data: true
-    }))
+    mockUseLogin({ login, data: true })
     renderComponent()
 
-    await userEvent.type(
-      screen.getByRole('textbox', { name: /email/i }),
-      'maria@gmail.com'
-    )
-    userEvent.type(screen.getByTestId('input-password'), 'Senha123')
-
-    await waitFor(() => {
-      expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue(
+    await act(async () => {
+      await userEvent.type(
+        screen.getByRole('textbox', { name: /email/i }),
         'maria@gmail.com'
       )
-      expect(screen.getByTestId('input-password')).toHaveValue('Senha123')
-    })
-
-    await userEvent.click(screen.getByRole('button', { name: /entrar/i }))
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalled()
-      expect(login).toHaveBeenCalled()
-      expect(push).toHaveBeenCalledWith('/donations')
+      userEvent.type(screen.getByTestId('input-password'), 'Senha123')
+      await waitFor(() => {
+        expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue(
+          'maria@gmail.com'
+        )
+        expect(screen.getByTestId('input-password')).toHaveValue('Senha123')
+      })
+      await userEvent.click(screen.getByRole('button', { name: /entrar/i }))
+      await waitFor(() => {
+        expect(push).toHaveBeenCalled()
+        expect(login).toHaveBeenCalled()
+        expect(push).toHaveBeenCalledWith('/donations')
+      })
     })
   })
 
@@ -110,13 +115,7 @@ describe('<LoginForm />', () => {
     ;(useCustomToast as jest.Mock).mockImplementation(() => ({
       showToast
     }))
-    ;(useLogin as jest.Mock).mockImplementation(() => ({
-      login: jest.fn(),
-      isLoading: false,
-      isError: true,
-      data: undefined,
-      error: new Error('Ocorreu um erro')
-    }))
+    mockUseLogin({ error: new Error('Ocorreu um erro'), isError: true })
     renderComponent()
 
     await waitFor(() => {
@@ -125,13 +124,7 @@ describe('<LoginForm />', () => {
   })
 
   it('should disable inputs and button on loading', () => {
-    ;(useLogin as jest.Mock).mockImplementation(() => ({
-      login: jest.fn(),
-      isLoading: true,
-      isError: false,
-      data: undefined,
-      error: undefined
-    }))
+    mockUseLogin({ isLoading: true })
     renderComponent()
 
     expect(screen.getByRole('button', { name: /entrar/i })).toBeDisabled()

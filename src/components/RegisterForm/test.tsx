@@ -6,6 +6,7 @@ import { RegisterForm } from '.'
 import { useCities } from '../../hooks/useCities'
 import { useRegisterUser } from '../../hooks/useRegisterUser'
 import { useCustomToast } from 'hooks/useCustomToast'
+import { CommonParams } from 'utils/testUtils'
 
 jest.mock('../../hooks/useCities', () => ({
   useCities: jest.fn(() => ({
@@ -73,14 +74,30 @@ async function fillOutForm() {
   await userEvent.type(screen.getByTestId('input-confirm-password'), 'Senh@123')
 }
 
+function mockUseCities(mock?: CommonParams) {
+  ;(useCities as jest.Mock).mockImplementationOnce(() => ({
+    data: undefined,
+    isLoading: true,
+    isError: false,
+    error: undefined,
+    ...mock
+  }))
+}
+
+function mockUseRegisterUser(mock?: CommonParams & { registerUser?(): void }) {
+  ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
+    data: undefined,
+    isLoading: false,
+    isError: true,
+    registerUser: jest.fn(),
+    error: undefined,
+    ...mock
+  }))
+}
+
 describe('<RegisterForm />', () => {
   beforeEach(() => {
-    ;(useCities as jest.Mock).mockImplementationOnce(() => ({
-      data: undefined,
-      isLoading: true,
-      isError: false,
-      error: undefined
-    }))
+    mockUseCities()
   })
   it('should render correctly', () => {
     renderComponent()
@@ -117,12 +134,7 @@ describe('<RegisterForm />', () => {
   })
 
   it('should enable city select and display options after state selection', async () => {
-    ;(useCities as jest.Mock).mockImplementationOnce(() => ({
-      isLoading: false,
-      isError: false,
-      data: mockCities,
-      error: undefined
-    }))
+    mockUseCities({ data: mockCities, isLoading: false })
 
     renderComponent(mockStates)
 
@@ -291,12 +303,7 @@ describe('<RegisterForm />', () => {
 
   describe('form submission', () => {
     beforeEach(() => {
-      ;(useCities as jest.Mock).mockImplementationOnce(() => ({
-        isLoading: false,
-        isError: false,
-        error: undefined,
-        data: mockCities
-      }))
+      mockUseCities({ isLoading: false, data: mockCities })
     })
 
     it('should display error message on form submit error', async () => {
@@ -305,13 +312,7 @@ describe('<RegisterForm />', () => {
       ;(useCustomToast as jest.Mock).mockImplementation(() => ({
         showToast
       }))
-      ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
-        data: undefined,
-        isLoading: false,
-        isError: true,
-        registerUser,
-        error: new Error('Algo deu errado')
-      }))
+      mockUseRegisterUser({ registerUser, error: new Error('Algo deu errado') })
       renderComponent(mockStates)
 
       await fillOutForm()
@@ -325,13 +326,7 @@ describe('<RegisterForm />', () => {
     })
 
     it('should disable form when loading is true', () => {
-      ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
-        data: undefined,
-        isLoading: true,
-        isError: false,
-        error: undefined,
-        registerUser: jest.fn()
-      }))
+      mockUseRegisterUser({ error: undefined, isError: false, isLoading: true })
       renderComponent(mockStates)
 
       expect(screen.getByLabelText(/nome/i)).toBeDisabled()
@@ -344,13 +339,11 @@ describe('<RegisterForm />', () => {
     })
 
     it('should display success message when call to registerUser returns data', async () => {
-      ;(useRegisterUser as jest.Mock).mockImplementation(() => ({
+      mockUseRegisterUser({
         data: { message: 'Sucesso' },
-        isLoading: true,
         isError: false,
-        error: undefined,
-        registerUser: jest.fn()
-      }))
+        isLoading: true
+      })
       renderComponent(mockStates)
 
       expect(
