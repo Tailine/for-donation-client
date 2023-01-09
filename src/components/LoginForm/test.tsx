@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithQueryClient } from 'utils/renderWithQueryClient'
 import { LoginForm } from '.'
@@ -85,25 +85,24 @@ describe('<LoginForm />', () => {
     mockUseLogin({ login, data: true })
     renderComponent()
 
-    await userEvent.type(
-      screen.getByRole('textbox', { name: /email/i }),
-      'maria@gmail.com'
-    )
-    userEvent.type(screen.getByTestId('input-password'), 'Senha123')
-
-    await waitFor(() => {
-      expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue(
+    await act(async () => {
+      await userEvent.type(
+        screen.getByRole('textbox', { name: /email/i }),
         'maria@gmail.com'
       )
-      expect(screen.getByTestId('input-password')).toHaveValue('Senha123')
-    })
-
-    await userEvent.click(screen.getByRole('button', { name: /entrar/i }))
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalled()
-      expect(login).toHaveBeenCalled()
-      expect(push).toHaveBeenCalledWith('/donations')
+      userEvent.type(screen.getByTestId('input-password'), 'Senha123')
+      await waitFor(() => {
+        expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue(
+          'maria@gmail.com'
+        )
+        expect(screen.getByTestId('input-password')).toHaveValue('Senha123')
+      })
+      await userEvent.click(screen.getByRole('button', { name: /entrar/i }))
+      await waitFor(() => {
+        expect(push).toHaveBeenCalled()
+        expect(login).toHaveBeenCalled()
+        expect(push).toHaveBeenCalledWith('/donations')
+      })
     })
   })
 
