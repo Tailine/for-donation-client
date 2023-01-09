@@ -7,7 +7,7 @@ import { useLogin } from 'hooks/useLogin'
 import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 import { isEmail } from 'utils/isEmail'
-import { validateRequired } from 'utils/validations'
+import { validateRequired } from 'utils/formValidations'
 import NextLink from 'next/link'
 
 type FormInput = {

@@ -17,8 +17,11 @@ import { useCustomToast } from 'hooks/useCustomToast'
 import { CreateAccountSuccess } from './CreateAccountSuccess'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/react'
-import { MAX_PHONE_LEN, MIN_PHONE_LEN } from 'utils/constants'
-import { validateRequired } from 'utils/validations'
+import {
+  validateName,
+  validatePhone,
+  validateRequired
+} from 'utils/formValidations'
 
 type Props = {
   states: State[]
@@ -49,29 +52,6 @@ type FieldErrors = Partial<Record<keyof InputFields, string>> &
     isPasswordPatternValid: boolean
     hasMatchingPasswords: string
   }>
-
-function validateName(name: string) {
-  if (name.length < 2) {
-    return { isValid: false, message: 'Nome deve ter pelo menos 2 caracteres' }
-  }
-
-  if (/\d/.test(name)) {
-    return { isValid: false, message: 'Insira apenas letras' }
-  }
-
-  return { isValid: true }
-}
-
-function validatePhone(phone: string) {
-  if (![MIN_PHONE_LEN, MAX_PHONE_LEN].includes(phone.length)) {
-    return {
-      isValid: false,
-      message: 'Número de telefone inválido'
-    }
-  }
-
-  return { isValid: true }
-}
 
 export function RegisterForm({ states }: Props) {
   const [selectedState, setSelectedState] = useState('')
