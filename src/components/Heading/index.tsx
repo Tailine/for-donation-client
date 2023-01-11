@@ -10,5 +10,13 @@ const headingColors = {
 }
 
 export function Heading({ color = 'green', ...props }: Props) {
-  return <ChakraHeading color={headingColors[color]} size="md" {...props} />
+  return (
+    <ChakraHeading
+      fontFamily="inherit"
+      fontWeight="normal"
+      color={headingColors[color]}
+      size="md"
+      {...props}
+    />
+  )
 }
