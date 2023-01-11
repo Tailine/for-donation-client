@@ -56,7 +56,13 @@ export function NavBar({ isAuthenticated }: Props) {
             <Flex
               align="center"
               justify="space-between"
-              width="40%"
+              width={{
+                base: '40%',
+                lg: '30%',
+                xl: '25%',
+                '2xl': '20%',
+                '4k': '15%'
+              }}
               display={{ base: 'none', md: 'flex' }}
             >
               <NavLink href="/doacoes" active={pathname}>
