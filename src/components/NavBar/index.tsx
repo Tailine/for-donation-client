@@ -1,7 +1,7 @@
 import {
   Box,
+  Fade,
   Flex,
-  Link,
   Menu,
   MenuButton,
   MenuItem,
@@ -10,83 +10,126 @@ import {
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { MobileMenu } from './MobileMenu'
+import { NavLink } from './NavLink'
 
 type Props = {
   isAuthenticated: boolean
 }
 
 export function NavBar({ isAuthenticated }: Props) {
+  const [isOpen, setisOpen] = useState(false)
   const router = useRouter()
   const pathname = router.pathname
 
+  function handleMenu() {
+    setisOpen(!isOpen)
+  }
+
   return (
-    <Flex
-      as="header"
-      justify="space-between"
-      paddingX={16}
-      paddingY={6}
-      borderBottom="1px"
-      borderColor="gray.200"
-    >
-      <NextLink href="/doacoes" legacyBehavior>
-        <a>
-          <Image src="/logo.png" height={100} width={100} alt="logo" />
-        </a>
-      </NextLink>
-      {isAuthenticated && (
-        <Flex align="center" justify="space-between" width="40%">
-          <NavLink href="/doacoes" active={pathname}>
-            Doações
-          </NavLink>
-          <NavLink href="/minhas-doacoes" active={pathname}>
-            Minhas doações
-          </NavLink>
-          <Menu>
-            <MenuButton>menu</MenuButton>
-            <MenuList>
-              <MenuItem>Configurações</MenuItem>
-              <MenuItem>Sair</MenuItem>
-            </MenuList>
-          </Menu>
-        </Flex>
+    <>
+      {isOpen && (
+        <style global jsx>{`
+          body {
+            overflow: hidden;
+          }
+        `}</style>
       )}
-    </Flex>
-  )
-}
-
-type NavLinkProps = {
-  children: React.ReactNode
-  href: string
-  active: string
-}
-
-function NavLink({ children, href, active }: NavLinkProps) {
-  const w = children.toString().length * 6
-  const isActive = href === active
-
-  return (
-    <Box position="relative">
-      <Link
-        as={NextLink}
-        href={href}
-        display="block"
-        color="black"
-        fontSize={{ base: 'sm', md: 'md' }}
+      <Flex
+        as="header"
+        justify="space-between"
+        paddingX={{ base: 6, md: 16 }}
+        paddingY={6}
+        borderBottom="1px"
+        borderColor="gray.200"
+        position="relative"
+        backgroundColor="gray.50"
       >
-        {children}
-      </Link>
-      {isActive && (
-        <Box
-          backgroundColor="purple.200"
-          width={w}
-          height={3}
-          position="absolute"
-          top="10px"
-          right={0}
-          left="6px"
-          zIndex={-1}
-        />
+        <NextLink href="/doacoes" legacyBehavior>
+          <a>
+            <Image src="/logo.png" height={100} width={100} alt="logo" />
+          </a>
+        </NextLink>
+        {isAuthenticated && (
+          <>
+            <Flex
+              align="center"
+              justify="space-between"
+              width="40%"
+              display={{ base: 'none', md: 'flex' }}
+            >
+              <NavLink href="/doacoes" active={pathname}>
+                Doações
+              </NavLink>
+              <NavLink href="/minhas-doacoes" active={pathname}>
+                Minhas doações
+              </NavLink>
+              <Menu>
+                <MenuButton>menu</MenuButton>
+                <MenuList>
+                  <MenuItem>Configurações</MenuItem>
+                  <MenuItem>Sair</MenuItem>
+                </MenuList>
+              </Menu>
+            </Flex>
+            {!isOpen && (
+              <Flex
+                direction="column"
+                align="flex-end"
+                justify="center"
+                as="button"
+                onClick={handleMenu}
+                display={{ base: 'flex', md: 'none' }}
+              >
+                <Box w="30px" h="2px" backgroundColor="purple.800" />
+                <Box
+                  w="20px"
+                  h="2px"
+                  backgroundColor="purple.800"
+                  marginTop={1}
+                />
+                <Box
+                  w="10px"
+                  h="2px"
+                  backgroundColor="purple.800"
+                  marginTop={1}
+                />
+              </Flex>
+            )}
+            {isOpen && (
+              <Flex
+                position="relative"
+                direction="column"
+                align="flex-end"
+                justify="center"
+                as="button"
+                onClick={handleMenu}
+                display={{ base: 'flex', md: 'none' }}
+              >
+                <Box
+                  w="20px"
+                  h="2px"
+                  backgroundColor="purple.800"
+                  transform="rotate(135deg)"
+                />
+                <Box
+                  position="absolute"
+                  w="20px"
+                  h="2px"
+                  backgroundColor="purple.800"
+                  transform="rotate(-135deg)"
+                />
+              </Flex>
+            )}
+          </>
+        )}
+      </Flex>
+      {isOpen && (
+        <Fade in={isOpen}>
+          <MobileMenu />
+        </Fade>
       )}
-    </Box>
+    </>
   )
 }

@@ -38,7 +38,7 @@ describe('<NavBar />', () => {
       expect(
         screen.getByRole('link', { name: /minhas doações/i })
       ).toBeInTheDocument()
-      expect(screen.getByRole('button')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'menu' })).toBeVisible()
     })
   })
 })
