@@ -5,7 +5,7 @@ export const customTheme = extendTheme({
     purple: {
       '50': '#EFEFF6',
       '100': '#D2D3E4',
-      '200': '#B5B6D3',
+      '200': '#D5D6F5',
       '300': '#999AC2',
       '400': '#7C7DB1',
       '500': '#5F61A0',
@@ -49,7 +49,8 @@ export const customTheme = extendTheme({
       '700': '#6f6666',
       '800': '#5e5656',
       '900': '#514b4b'
-    }
+    },
+    black: '#2D2D2D'
   },
   breakpoints: {
     '4k': '2560px'
