@@ -43,8 +43,10 @@ export function NavBar({ isAuthenticated }: Props) {
         paddingY={6}
         borderBottom="1px"
         borderColor="gray.200"
-        position="relative"
         backgroundColor="gray.50"
+        position="sticky"
+        top={0}
+        zIndex={1}
       >
         <NextLink href="/doacoes" legacyBehavior>
           <a>
