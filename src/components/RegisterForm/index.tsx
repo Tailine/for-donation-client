@@ -17,8 +17,14 @@ import { useCustomToast } from 'hooks/useCustomToast'
 import { CreateAccountSuccess } from './CreateAccountSuccess'
 import NextLink from 'next/link'
 import { Link } from '@chakra-ui/react'
-import { MAX_PHONE_LEN, MIN_PHONE_LEN } from 'utils/constants'
-import { validateRequired } from 'utils/validations'
+import {
+  isFormValid,
+  validateHasOnlyLetters,
+  validateName,
+  validatePhone,
+  validateRequired
+} from 'utils/validations'
+import { INVALID_EMAIL_MESSAGE } from 'utils/constants'
 
 type Props = {
   states: State[]
@@ -50,29 +56,6 @@ type FieldErrors = Partial<Record<keyof InputFields, string>> &
     hasMatchingPasswords: string
   }>
 
-function validateName(name: string) {
-  if (name.length < 2) {
-    return { isValid: false, message: 'Nome deve ter pelo menos 2 caracteres' }
-  }
-
-  if (/\d/.test(name)) {
-    return { isValid: false, message: 'Insira apenas letras' }
-  }
-
-  return { isValid: true }
-}
-
-function validatePhone(phone: string) {
-  if (![MIN_PHONE_LEN, MAX_PHONE_LEN].includes(phone.length)) {
-    return {
-      isValid: false,
-      message: 'Número de telefone inválido'
-    }
-  }
-
-  return { isValid: true }
-}
-
 export function RegisterForm({ states }: Props) {
   const [selectedState, setSelectedState] = useState('')
   const [formInput, setFormInput] = useState<InputFields>(initalValues)
@@ -89,6 +72,7 @@ export function RegisterForm({ states }: Props) {
 
   function validateFormInput() {
     const nameValidation = validateName(formInput.name)
+    const nameOnlyLettersValidation = validateHasOnlyLetters(formInput.name)
     const isEmailValid = isEmail(formInput.email)
     const phoneValidation = validatePhone(formInput.phone)
     const stateValidation = validateRequired(
@@ -115,8 +99,11 @@ export function RegisterForm({ states }: Props) {
     )
 
     const formInputError: FieldErrors = {
-      ...(!nameValidation.isValid && { name: nameValidation.message }),
-      ...(!isEmailValid && { email: 'Email inválido' }),
+      ...(!nameValidation.isValid && { name: nameValidation?.message }),
+      ...(!nameOnlyLettersValidation.isValid && {
+        name: nameOnlyLettersValidation?.message
+      }),
+      ...(!isEmailValid && { email: INVALID_EMAIL_MESSAGE }),
       ...(!phoneValidation.isValid && { phone: phoneValidation.message }),
       ...(!stateValidation.isValid && { state: stateValidation.message }),
       ...(!cityValidation.isValid && { city: cityValidation.message }),
@@ -141,14 +128,10 @@ export function RegisterForm({ states }: Props) {
     return formInputError
   }
 
-  function isFormInputValid() {
-    return !Object.keys(validateFormInput()).length
-  }
-
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
 
-    if (isFormInputValid()) {
+    if (isFormValid(validateFormInput())) {
       registerUser({
         name: formInput.name,
         email: formInput.email,
