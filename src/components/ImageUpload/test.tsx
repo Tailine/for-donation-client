@@ -30,7 +30,6 @@ describe('<ImageUpload />', () => {
   it('should display image passed as prop', () => {
     renderComponent(undefined, 'http://image.jpg')
 
-    const regex = new RegExp('image.jpf')
     expect(screen.getByRole('img')).toBeInTheDocument()
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
