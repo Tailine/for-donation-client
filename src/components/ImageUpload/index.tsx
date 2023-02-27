@@ -31,7 +31,7 @@ export function ImageUpload({ onImageUpload, img = '' }: Props) {
       }
     : {
         opacity: 1,
-        text: 'Selecione uma imagem'
+        text: 'Selecionar imagem'
       }
 
   return (
@@ -42,7 +42,7 @@ export function ImageUpload({ onImageUpload, img = '' }: Props) {
       borderStyle="dashed"
       borderColor="purple.700"
       height={200}
-      width={{ base: '100%', md: 300 }}
+      width={{ base: '100%' }}
       display="flex"
       flexDirection="column"
       alignItems="center"
@@ -74,7 +74,7 @@ export function ImageUpload({ onImageUpload, img = '' }: Props) {
       <Input
         ref={fileInput}
         data-testid="file-upload"
-        accept=".jpg,.jpeg"
+        accept=".jpg,.jpeg,.png"
         width="auto"
         type="file"
         border={0}

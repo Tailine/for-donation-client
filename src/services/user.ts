@@ -17,7 +17,7 @@ export class UserService {
   async registerUser(
     newUser: NewUser
   ): Promise<{ message: string } | undefined> {
-    const data = await this.httpClient.post('/user/sign-up', newUser)
+    const data = await this.httpClient.post('/users/sign-up', newUser)
 
     if (!isOfType<{ message: string }>(data, ['message'])) {
       throw new Error(DEFAULT_ERROR_MESSAGE)
@@ -27,10 +27,18 @@ export class UserService {
   }
 
   async login(email: string, password: string): Promise<boolean> {
-    const data = await this.httpClient.post('/user/sign-in', {
-      email,
-      password
-    })
+    const data = await this.httpClient.post(
+      '/users/sign-in',
+      JSON.stringify({
+        email,
+        password
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
 
     return isOfType<{ message: string }>(data, ['message'])
   }

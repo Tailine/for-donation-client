@@ -1,4 +1,4 @@
-import { Fetch } from 'config/httpClient'
+import { Fetch } from 'config/httpClient/fetch'
 import { HttpClientPort } from 'config/httpClient/port'
 import { UserService } from 'services/user'
 

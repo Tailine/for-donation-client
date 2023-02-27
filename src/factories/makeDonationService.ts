@@ -1,8 +1,8 @@
 import { Fetch } from 'config/httpClient/fetch'
 import { HttpClientPort } from 'config/httpClient/port'
-import { CityService } from 'services/city'
+import { DonationService } from 'services/donation'
 
-export function makeCityService(): CityService {
+export function makeDonationService(): DonationService {
   const httpClient: HttpClientPort = new Fetch()
-  return new CityService(httpClient)
+  return new DonationService(httpClient)
 }

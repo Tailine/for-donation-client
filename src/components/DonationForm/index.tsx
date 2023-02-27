@@ -1,6 +1,7 @@
-import { Box, Input as ChakraInput, Text } from '@chakra-ui/react'
+import { Grid, GridItem, Text, Textarea } from '@chakra-ui/react'
 import { FormField } from 'components/FormField'
 import { Input } from 'components/Input'
+import { ImageUpload } from 'components/ImageUpload'
 import { InputPhone } from 'components/InputPhone'
 import { Select } from 'components/Select'
 import { FormEvent, useState } from 'react'
@@ -75,19 +76,11 @@ export function DonationForm({ submit, categories }: Props) {
     return inputErrors
   }
 
-  function handleFileChange(fileList: FileList) {
-    const files = []
-    for (const file of Array.from(fileList)) {
-      files.push(file)
-    }
-    handleInputChange('images', files)
-  }
-
   function onSubmit(e: FormEvent) {
     e.preventDefault()
 
-    console.log({ formInput })
     if (isFormValid(validateForm())) {
+      console.log('IS VALID')
       submit(formInput)
     }
   }
@@ -98,105 +91,124 @@ export function DonationForm({ submit, categories }: Props) {
   }))
 
   return (
-    <form name="new-donation-form" onSubmit={onSubmit}>
-      <FormField
-        labelProps={{
-          htmlFor: 'title',
-          labelText: 'Título'
-        }}
-        formControlProps={{
-          isInvalid: Boolean(errors.title)
-        }}
-        errorMessage={errors.title}
-      >
-        <Input
-          id="title"
-          name="title"
-          onValueChange={(value) => handleInputChange('title', value)}
-        />
-      </FormField>
-
-      <FormField
-        labelProps={{
-          htmlFor: 'email',
-          labelText: 'Email'
-        }}
-        formControlProps={{
-          isInvalid: Boolean(errors.email)
-        }}
-        errorMessage={errors.email}
-      >
-        <Input
-          id="email"
-          name="email"
-          onValueChange={(value) => handleInputChange('email', value)}
-        />
-      </FormField>
-
-      <FormField
-        labelProps={{
-          htmlFor: 'category',
-          labelText: 'Categoria'
-        }}
-        formControlProps={{
-          isInvalid: Boolean(errors.category)
-        }}
-        errorMessage={errors.category}
-      >
-        <Select
-          id="category"
-          name="category"
-          onOptionChange={(value) => handleInputChange('category', value)}
-          options={options}
-        />
-      </FormField>
-
-      <FormField
-        labelProps={{
-          htmlFor: 'phone',
-          labelText: 'Telefone'
-        }}
-        formControlProps={{
-          isInvalid: Boolean(errors.phone)
-        }}
-        errorMessage={errors.phone}
-      >
-        <InputPhone
-          id="phone"
-          name="phone"
-          onValueChange={(value) => handleInputChange('phone', value)}
-        />
-      </FormField>
-
-      <FormField
-        labelProps={{
-          htmlFor: 'description',
-          labelText: 'Descrição'
-        }}
-        formControlProps={{
-          isInvalid: Boolean(errors.description)
-        }}
-        errorMessage={errors.description}
-      >
-        <Input
-          id="description"
-          name="description"
-          onValueChange={(value) => handleInputChange('description', value)}
-        />
-      </FormField>
-
-      <Box>
-        <Box>
-          <ChakraInput
-            type="file"
-            data-testid="img-upload"
-            onChange={(e) => handleFileChange(e.target.files)}
+    <form id="new-donation-form" name="new-donation-form" onSubmit={onSubmit}>
+      <Grid gridGap={8} gridTemplateColumns={{ base: '1fr', md: '1fr 1fr' }}>
+        <FormField
+          labelProps={{
+            htmlFor: 'title',
+            labelText: 'Título'
+          }}
+          formControlProps={{
+            isInvalid: Boolean(errors.title)
+          }}
+          errorMessage={errors.title}
+        >
+          <Input
+            id="title"
+            name="title"
+            onValueChange={(value) => handleInputChange('title', value)}
           />
-          <ChakraInput type="file" data-testid="img-upload" />
-          <ChakraInput type="file" data-testid="img-upload" />
-        </Box>
-        {errors.images && <Text>{errors.images}</Text>}
-      </Box>
+        </FormField>
+
+        <FormField
+          labelProps={{
+            htmlFor: 'email',
+            labelText: 'Email'
+          }}
+          formControlProps={{
+            isInvalid: Boolean(errors.email)
+          }}
+          errorMessage={errors.email}
+        >
+          <Input
+            id="email"
+            name="email"
+            onValueChange={(value) => handleInputChange('email', value)}
+          />
+        </FormField>
+
+        <FormField
+          labelProps={{
+            htmlFor: 'category',
+            labelText: 'Categoria'
+          }}
+          formControlProps={{
+            isInvalid: Boolean(errors.category)
+          }}
+          errorMessage={errors.category}
+        >
+          <Select
+            id="category"
+            name="category"
+            placeholder="Selecione uma categoria"
+            onOptionChange={(value) => handleInputChange('category', value)}
+            options={options}
+          />
+        </FormField>
+
+        <FormField
+          labelProps={{
+            htmlFor: 'phone',
+            labelText: 'Telefone'
+          }}
+          formControlProps={{
+            isInvalid: Boolean(errors.phone)
+          }}
+          errorMessage={errors.phone}
+        >
+          <InputPhone
+            id="phone"
+            name="phone"
+            onValueChange={(value) => handleInputChange('phone', value)}
+          />
+        </FormField>
+
+        <GridItem colSpan={{ base: 1, md: 2 }}>
+          <FormField
+            labelProps={{
+              htmlFor: 'description',
+              labelText: 'Descrição'
+            }}
+            formControlProps={{
+              isInvalid: Boolean(errors.description)
+            }}
+            errorMessage={errors.description}
+          >
+            <Textarea
+              id="description"
+              name="description"
+              onChange={({ target: { value } }) =>
+                handleInputChange('description', value)
+              }
+            />
+          </FormField>
+        </GridItem>
+
+        <GridItem colSpan={{ base: 1, md: 2 }}>
+          <Grid
+            gridGap={4}
+            gridTemplateColumns={{ base: '1fr', md: '1fr 1fr' }}
+          >
+            <ImageUpload
+              onImageUpload={(file) => {
+                console.log('FILE')
+                handleInputChange('images', [...formInput.images, file])
+              }}
+            />
+            <ImageUpload
+              onImageUpload={(file) =>
+                handleInputChange('images', [...formInput.images, file])
+              }
+            />
+            <ImageUpload
+              onImageUpload={(file) =>
+                handleInputChange('images', [...formInput.images, file])
+              }
+            />
+          </Grid>
+          {errors.images && <Text>{errors.images}</Text>}
+        </GridItem>
+      </Grid>
     </form>
   )
 }

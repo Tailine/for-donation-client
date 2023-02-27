@@ -19,7 +19,7 @@ export type Props = {
 export function Modal({ title, children, isOpen, footer }: Props) {
   const { onClose } = useDisclosure()
   return (
-    <ChackraModal isOpen={isOpen} onClose={onClose}>
+    <ChackraModal isOpen={isOpen} onClose={onClose} size="3xl">
       <ModalOverlay />
       <ModalContent borderRadius={0}>
         <ModalHeader>{title}</ModalHeader>

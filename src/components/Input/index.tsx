@@ -4,7 +4,7 @@ import { PhoneMaskResult } from 'utils/phoneMask'
 
 type Props = Partial<Omit<InputProps, 'name' | 'id'>> & {
   name: string
-  id: string
+  id?: string
   onValueChange(value: string): void
   initialValue?: string
   formatInput?(value: string): PhoneMaskResult
@@ -36,11 +36,11 @@ export function Input({
     <ChakraInput
       boxShadow={0}
       transition="all 100ms"
+      focusBorderColor="purple.700"
       _hover={{
         borderColor: 'purple.800'
       }}
       _focus={{
-        borderColor: 'purple.700',
         boxShadow: 'unset',
         borderWidth: 2
       }}

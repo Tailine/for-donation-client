@@ -1,5 +1,5 @@
 import { RegisterForm } from 'components/RegisterForm'
-import { State } from 'domain/types'
+import { makeCityService } from 'factories/makeCityService'
 import { InferGetStaticPropsType } from 'next'
 import { Auth } from 'templates/Auth'
 
@@ -13,25 +13,12 @@ export default function SignUp({
   )
 }
 
-function isState(data: any[]): data is State[] {
-  return data.every(
-    (item) =>
-      (item as State).acronym && (item as State).id && (item as State).name
-  )
-}
-
 export async function getServerSideProps() {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/place/state`
-    )
-    const data = await response.json()
-
-    if (data instanceof Array && isState(data)) {
-      return {
-        props: {
-          states: data
-        }
+    const states = await makeCityService().fetchStates()
+    return {
+      props: {
+        states
       }
     }
   } catch (err) {

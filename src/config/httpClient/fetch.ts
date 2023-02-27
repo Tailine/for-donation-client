@@ -5,8 +5,7 @@ import { HttpClientPort } from './port'
 export class Fetch implements HttpClientPort {
   private readonly defaultOptions: RequestInit = {
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
+      Accept: 'application/json'
     },
     credentials: 'include'
   }
@@ -22,13 +21,14 @@ export class Fetch implements HttpClientPort {
     return response.json()
   }
 
-  async post(endpoint: string, body: any): Promise<any> {
+  async post(endpoint: string, body: any, options?: RequestInit): Promise<any> {
+    console.log({ body })
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
       {
         method: 'POST',
-        body: JSON.stringify(body),
-        ...this.defaultOptions
+        body,
+        ...{ ...this.defaultOptions, ...options }
       }
     )
 

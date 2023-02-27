@@ -10,3 +10,13 @@ export type City = {
 }
 
 export type Category = City
+
+export type Donation = {
+  id: string
+  title: string
+  email: string
+  phone: string
+  description: string
+  images: string[]
+  category: Category
+}

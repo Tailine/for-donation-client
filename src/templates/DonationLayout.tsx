@@ -1,21 +1,35 @@
-import { Box, Grid } from '@chakra-ui/react'
+import { Box, Flex, Grid, Spacer } from '@chakra-ui/react'
 import { Heading } from 'components/Heading'
-import { NavBar } from 'components/NavBar'
+import { NewDonation } from 'components/NewDonation'
+import { Search } from 'components/Search'
+import { Main } from './Main'
 
 type Props = {
   title: string
   children: JSX.Element
+  shouldDisplayAddDonation: boolean
+  userId?: string
 }
 
-export function DonationLayout({ title, children }: Props) {
+export function DonationLayout({
+  title,
+  shouldDisplayAddDonation,
+  userId,
+  children
+}: Props) {
   return (
-    <Box backgroundColor="gray.50" minHeight="100vh" width="100%">
-      <NavBar isAuthenticated />
+    <Main>
       <Box paddingX={{ base: 6, md: 16 }} paddingY={12}>
         <Heading marginBottom={12} size="lg">
           {title}
         </Heading>
+        <Flex as="section" justifyContent="space-between" marginBottom={12}>
+          <Search />
+          <Spacer />
+          {shouldDisplayAddDonation && <NewDonation userId={userId} />}
+        </Flex>
         <Grid
+          as="section"
           gap={10}
           gridTemplateColumns={{
             base: '1fr',
@@ -28,6 +42,6 @@ export function DonationLayout({ title, children }: Props) {
           {children}
         </Grid>
       </Box>
-    </Box>
+    </Main>
   )
 }

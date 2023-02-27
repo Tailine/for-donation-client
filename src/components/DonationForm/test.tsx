@@ -3,6 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { renderWithQueryClient } from 'utils/renderWithQueryClient'
 import { DonationForm } from '.'
 
+Object.defineProperty(URL, 'createObjectURL', {
+  writable: true,
+  value: jest.fn(() => 'http://fake-image-url')
+})
+
 const mockCategories = [
   { id: 1, name: 'Eletrodoméstico' },
   { id: 2, name: 'Veículos' }
@@ -55,7 +60,7 @@ describe('<DonationForm />', () => {
   })
 
   it('should submit form', async () => {
-    const file = [new File(['hello'], 'hello.png', { type: 'image/png' })]
+    const file = [new File(['hello'], 'hello.jpg', { type: 'image/jpg' })]
     const submitFn = jest.fn()
     renderComponent(submitFn)
 
@@ -79,7 +84,7 @@ describe('<DonationForm />', () => {
       screen.getByRole('textbox', { name: /descrição/i }),
       'Roupas em ótimo estado.'
     )
-    await userEvent.upload(screen.getAllByTestId(/img-upload/i)[0], file)
+    await userEvent.upload(screen.getAllByTestId('file-upload')[0], file)
 
     fireEvent.submit(screen.getByRole('form'))
 

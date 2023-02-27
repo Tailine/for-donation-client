@@ -64,7 +64,7 @@ export function LoginForm() {
     }
   }
 
-  if (data) router.push('/donations')
+  if (data) router.push('/doacoes')
   if (isError) showToast(error.message, 'error')
 
   return (

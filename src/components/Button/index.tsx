@@ -9,11 +9,15 @@ type Props = Omit<ChakraButtonProps, 'variant'> & {
 
 const buttonStyles: Record<Props['variant'], ChakraButtonProps> = {
   ghost: {
-    colorScheme: 'green',
-    variant: 'ghost'
+    colorScheme: 'purple',
+    variant: 'ghost',
+    background: 'transparent',
+    _focus: {
+      background: 'transparent'
+    }
   },
   outlined: {
-    colorScheme: 'green',
+    colorScheme: 'purple',
     variant: 'ghost',
     border: '1px',
     borderColor: 'purple.700',
