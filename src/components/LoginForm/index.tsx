@@ -132,14 +132,14 @@ export function LoginForm() {
               textAlign="center"
               marginTop={4}
             >
-              Já possui conta?{' '}
+              Ainda não possui conta?{' '}
               <Link
                 as={NextLink}
-                href="/sign-in"
+                href="/sign-up"
                 textAlign="center"
                 color="yellow.400"
               >
-                Efetuar login
+                Cadastre-se
               </Link>
             </Text>
           </Box>

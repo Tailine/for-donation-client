@@ -71,7 +71,7 @@ describe('<LoginForm />', () => {
     })
   })
 
-  it('should call login function when inputs are valid and redirect to /donations when data is true', async () => {
+  it('should call login function when inputs are valid and redirect to /doacoes when data is true', async () => {
     const push = jest.fn()
     const login = jest.fn()
     ;(useRouter as jest.Mock).mockImplementation(() => ({ push }))
@@ -101,7 +101,7 @@ describe('<LoginForm />', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalled()
       expect(login).toHaveBeenCalled()
-      expect(push).toHaveBeenCalledWith('/donations')
+      expect(push).toHaveBeenCalledWith('/doacoes')
     })
   })
 

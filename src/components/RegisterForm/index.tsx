@@ -347,7 +347,7 @@ export function RegisterForm({ states }: Props) {
                 Já possui conta?{' '}
                 <Link
                   as={NextLink}
-                  href="/sign-in"
+                  href="/"
                   textAlign="center"
                   color="yellow.400"
                 >
