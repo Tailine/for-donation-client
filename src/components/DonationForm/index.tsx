@@ -8,6 +8,13 @@ import { FormEvent, useState } from 'react'
 import { INVALID_EMAIL_MESSAGE } from 'utils/constants'
 import { isEmail } from 'utils/isEmail'
 import { isFormValid, validatePhone, validateRequired } from 'utils/validations'
+import { SubmitData } from 'components/NewDonation'
+
+export type ImageData = {
+  file: File
+  filename: string
+  altText: string
+}
 
 export type InputFields = {
   title: string
@@ -15,7 +22,7 @@ export type InputFields = {
   category: string
   phone: string
   description: string
-  images: File[]
+  images: Map<string, ImageData>
 }
 
 type FieldErrors = Partial<Record<keyof InputFields, string>>
@@ -26,20 +33,35 @@ const initialValues = {
   category: '',
   phone: '',
   description: '',
-  images: []
+  images: new Map([
+    ['image1', undefined],
+    ['image2', undefined],
+    ['image3', undefined]
+  ])
 }
 
 type Props = {
   categories: { id: number; name: string }[]
-  submit(newDonation: InputFields): void
+  submit(newDonation: SubmitData): void
 }
 
 export function DonationForm({ submit, categories }: Props) {
   const [formInput, setFormInput] = useState<InputFields>(initialValues)
   const [errors, setErrors] = useState<FieldErrors>({})
 
-  function handleInputChange(name: keyof InputFields, value: string | File[]) {
+  function handleInputChange(name: keyof InputFields, value: string) {
     setFormInput({ ...formInput, [name]: value })
+  }
+
+  function handleImageUploadData(id: string, imageData: Partial<ImageData>) {
+    const mapCopy = new Map(formInput.images)
+    const image = mapCopy.get(id)
+    mapCopy.set(id, {
+      altText: imageData?.altText ?? '',
+      file: imageData?.file ?? image.file,
+      filename: imageData?.filename ?? image.filename
+    })
+    setFormInput({ ...formInput, images: mapCopy })
   }
 
   function validateForm() {
@@ -79,9 +101,20 @@ export function DonationForm({ submit, categories }: Props) {
   function onSubmit(e: FormEvent) {
     e.preventDefault()
 
+    console.log(Array.from(formInput.images.values()))
+    const valuesIterator = Array.from(formInput.images.values())
+    const imageDescriptions = valuesIterator.map((value) => ({
+      filename: value.filename,
+      altText: value.altText
+    }))
+    const images = valuesIterator.map((value) => value.file)
     if (isFormValid(validateForm())) {
       console.log('IS VALID')
-      submit(formInput)
+      submit({
+        ...formInput,
+        images,
+        imageDescriptions
+      })
     }
   }
 
@@ -89,6 +122,19 @@ export function DonationForm({ submit, categories }: Props) {
     label: category.name,
     value: category.id.toString()
   }))
+
+  const imageUploadElements = Array.from(formInput.images).map(
+    ([key, value]) => {
+      return (
+        <ImageUpload
+          key={key}
+          id={key}
+          imgDescription={value?.altText ?? ''}
+          onImageDataChange={handleImageUploadData}
+        />
+      )
+    }
+  )
 
   return (
     <form id="new-donation-form" name="new-donation-form" onSubmit={onSubmit}>
@@ -189,22 +235,7 @@ export function DonationForm({ submit, categories }: Props) {
             gridGap={4}
             gridTemplateColumns={{ base: '1fr', md: '1fr 1fr' }}
           >
-            <ImageUpload
-              onImageUpload={(file) => {
-                console.log('FILE')
-                handleInputChange('images', [...formInput.images, file])
-              }}
-            />
-            <ImageUpload
-              onImageUpload={(file) =>
-                handleInputChange('images', [...formInput.images, file])
-              }
-            />
-            <ImageUpload
-              onImageUpload={(file) =>
-                handleInputChange('images', [...formInput.images, file])
-              }
-            />
+            {imageUploadElements}
           </Grid>
           {errors.images && <Text>{errors.images}</Text>}
         </GridItem>

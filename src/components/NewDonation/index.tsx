@@ -5,10 +5,14 @@ import { useCategory } from 'hooks/useCategory'
 import { useCustomToast } from 'hooks/useCustomToast'
 import { useNewDonation } from 'hooks/useNewDonation'
 import { useState } from 'react'
-import { DonationData } from 'services/donation'
 
 type Props = {
   userId?: string
+}
+
+export type SubmitData = Omit<InputFields, 'images'> & {
+  imageDescriptions: { filename: string; altText: string }[]
+  images: File[]
 }
 
 export function NewDonation({ userId }: Props) {
@@ -31,8 +35,16 @@ export function NewDonation({ userId }: Props) {
   // call api
   // format before calling api
 
-  function submit(data: InputFields) {
-    const { category, description, email, images, phone, title } = data
+  function submit(data: SubmitData) {
+    const {
+      category,
+      description,
+      email,
+      images,
+      phone,
+      title,
+      imageDescriptions
+    } = data
     // const donationData: DonationData = {
     //   userId,
     //   categoryId: category,
@@ -48,6 +60,7 @@ export function NewDonation({ userId }: Props) {
     formData.append('email', email)
     formData.append('phone', phone)
     formData.append('categoryId', category)
+    formData.append('imageDescriptions', JSON.stringify(imageDescriptions))
     images.forEach((img) => formData.append('images', img))
     console.log(formData.get('images'))
     createDonation(formData)
