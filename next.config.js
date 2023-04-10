@@ -4,6 +4,15 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     forceSwcTransforms: true
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'unwojajwcbvfiyxybedi.supabase.co',
+        pathname: '/**'
+      }
+    ]
   }
 }
 
