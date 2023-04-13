@@ -22,10 +22,15 @@ export type InputFields = {
   category: string
   phone: string
   description: string
-  images: Map<string, ImageData>
+  images: Map<string, ImageData | undefined>
 }
 
-type FieldErrors = Partial<Record<keyof InputFields, string>>
+type FieldErrors = Partial<
+  Record<keyof Omit<InputFields, 'images'>, string>
+> & {
+  images?: Record<string, string>
+  noImage?: string
+}
 
 const initialValues = {
   title: '',
@@ -33,7 +38,7 @@ const initialValues = {
   category: '',
   phone: '',
   description: '',
-  images: new Map([
+  images: new Map<string, ImageData | undefined>([
     ['image1', undefined],
     ['image2', undefined],
     ['image3', undefined]
@@ -64,6 +69,16 @@ export function DonationForm({ submit, categories }: Props) {
     setFormInput({ ...formInput, images: mapCopy })
   }
 
+  function checkImageDescriptions(images: Map<string, ImageData | undefined>) {
+    const errors: Record<string, string> = {}
+    for (const [key, value] of Array.from(images.entries())) {
+      if (value && value.file && !value.altText) {
+        errors[key] = 'Adicione uma descrição'
+      }
+    }
+    return errors
+  }
+
   function validateForm() {
     const titleValidation = validateRequired(
       formInput.title,
@@ -79,6 +94,11 @@ export function DonationForm({ submit, categories }: Props) {
       formInput.description,
       'Insira uma descrição'
     )
+    const imageDescriptionValidation = checkImageDescriptions(formInput.images)
+    const hasImageDescriptionError = Object.keys(
+      imageDescriptionValidation
+    ).length
+    console.log({ imageDescriptionValidation })
 
     const inputErrors: FieldErrors = {
       ...(!titleValidation.isValid && { title: titleValidation?.message }),
@@ -90,9 +110,11 @@ export function DonationForm({ submit, categories }: Props) {
       ...(!descriptionValidation.isValid && {
         description: descriptionValidation?.message
       }),
-      ...(!formInput.images.length && {
-        images: 'Adicione pelo menos uma imagem'
-      })
+      ...(!Array.from(formInput.images.values()).filter((value) => value)
+        .length && {
+        noImage: 'Adicione pelo menos uma imagem'
+      }),
+      ...(hasImageDescriptionError && { images: imageDescriptionValidation })
     }
     setErrors(inputErrors)
     return inputErrors
@@ -101,13 +123,16 @@ export function DonationForm({ submit, categories }: Props) {
   function onSubmit(e: FormEvent) {
     e.preventDefault()
 
-    console.log(Array.from(formInput.images.values()))
-    const valuesIterator = Array.from(formInput.images.values())
+    // console.log(Array.from(formInput.images.values()))
+    const valuesIterator = Array.from(formInput.images.values()).filter(
+      (value) => value
+    )
     const imageDescriptions = valuesIterator.map((value) => ({
       filename: value.filename,
       altText: value.altText
     }))
     const images = valuesIterator.map((value) => value.file)
+    console.log({ formInput })
     if (isFormValid(validateForm())) {
       console.log('IS VALID')
       submit({
@@ -125,10 +150,14 @@ export function DonationForm({ submit, categories }: Props) {
 
   const imageUploadElements = Array.from(formInput.images).map(
     ([key, value]) => {
+      const error = errors?.images?.[key]
+      console.log({ error, key })
+
       return (
         <ImageUpload
           key={key}
           id={key}
+          errorMsg={error}
           imgDescription={value?.altText ?? ''}
           onImageDataChange={handleImageUploadData}
         />
@@ -237,7 +266,7 @@ export function DonationForm({ submit, categories }: Props) {
           >
             {imageUploadElements}
           </Grid>
-          {errors.images && <Text>{errors.images}</Text>}
+          {errors.noImage && <Text>{errors.noImage}</Text>}
         </GridItem>
       </Grid>
     </form>

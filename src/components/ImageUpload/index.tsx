@@ -1,7 +1,8 @@
-import { Box, Input, Stack } from '@chakra-ui/react'
+import { Box, Input as ChakraInput, Stack } from '@chakra-ui/react'
 import { Button } from 'components/Button'
 import { ImageData } from 'components/DonationForm'
 import { FormField } from 'components/FormField'
+import { Input } from 'components/Input'
 import Image from 'next/image'
 import { ChangeEvent, useRef, useState } from 'react'
 
@@ -9,11 +10,13 @@ type Props = {
   id: string
   imgDescription: string
   onImageDataChange(id: string, imageData: Partial<ImageData>): void
+  errorMsg?: string
   img?: string
 }
 
 export function ImageUpload({
   id,
+  errorMsg,
   onImageDataChange,
   imgDescription,
   img = ''
@@ -42,8 +45,6 @@ export function ImageUpload({
         opacity: 1,
         text: 'Selecionar imagem'
       }
-
-  console.log({ fileInput })
 
   return (
     <Stack>
@@ -83,7 +84,7 @@ export function ImageUpload({
           zIndex={1}
         />
         {imgUrl && <Image src={imgUrl} alt="imagem selecionada" fill />}
-        <Input
+        <ChakraInput
           ref={fileInput}
           data-testid="file-upload"
           accept=".jpg,.jpeg,.png"
@@ -107,17 +108,19 @@ export function ImageUpload({
       {imgUrl && (
         <FormField
           labelProps={{
-            htmlFor: `description${id}`,
+            htmlFor: `description-${id}`,
             labelText: 'Descrição da imagem'
           }}
           formControlProps={{
-            isInvalid: false
+            isInvalid: !!errorMsg
           }}
-          errorMessage={''}
+          errorMessage={errorMsg}
         >
           <Input
+            id={`description-${id}`}
+            name={`description-${id}`}
             value={imgDescription}
-            onChange={(e) => onImageDataChange(id, { altText: e.target.value })}
+            onValueChange={(value) => onImageDataChange(id, { altText: value })}
             placeholder="Ex: Cadeira de praia listrada"
           />
         </FormField>
