@@ -1,15 +1,23 @@
-import { Box, Input as ChakraInput, Stack } from '@chakra-ui/react'
+import {
+  Box,
+  Center,
+  Input as ChakraInput,
+  Flex,
+  Stack
+} from '@chakra-ui/react'
 import { Button } from 'components/Button'
 import { ImageData } from 'components/DonationForm'
 import { FormField } from 'components/FormField'
 import { Input } from 'components/Input'
 import Image from 'next/image'
 import { ChangeEvent, useRef, useState } from 'react'
+import { CloseIcon } from '@chakra-ui/icons'
 
 type Props = {
   id: string
   imgDescription: string
   onImageDataChange(id: string, imageData: Partial<ImageData>): void
+  onDelete(id: string): void
   errorMsg?: string
   img?: string
 }
@@ -18,6 +26,7 @@ export function ImageUpload({
   id,
   errorMsg,
   onImageDataChange,
+  onDelete,
   imgDescription,
   img = ''
 }: Props) {
@@ -36,6 +45,11 @@ export function ImageUpload({
     onImageDataChange(id, { file, filename: file.name })
   }
 
+  function handleImageDelete() {
+    setImgUrl('')
+    onDelete(id)
+  }
+
   const buttonConfig = imgUrl
     ? {
         opacity: 0,
@@ -47,7 +61,39 @@ export function ImageUpload({
       }
 
   return (
-    <Stack>
+    <Stack position="relative">
+      {imgUrl && (
+        <Flex
+          position="absolute"
+          top={-2}
+          right={-2}
+          zIndex={2}
+          borderRadius="50%"
+          padding={1}
+          border="1px"
+          width="30px"
+          height="30px"
+          borderColor="gray.500"
+          cursor="pointer"
+          _hover={{
+            borderColor: 'red.500',
+            backgroundColor: 'red.50',
+            color: 'red.500',
+            '.icon': {
+              color: 'red.500'
+            }
+          }}
+        >
+          <Center w="100%">
+            <CloseIcon
+              className="icon"
+              color="gray.500"
+              boxSize={3}
+              onClick={handleImageDelete}
+            />
+          </Center>
+        </Flex>
+      )}
       <Box
         data-testid="file-upload-container"
         borderRadius={0}

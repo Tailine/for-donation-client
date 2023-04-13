@@ -58,6 +58,12 @@ export function DonationForm({ submit, categories }: Props) {
     setFormInput({ ...formInput, [name]: value })
   }
 
+  function deleteImage(id: string) {
+    const mapCopy = new Map(formInput.images)
+    mapCopy.set(id, undefined)
+    setFormInput({ ...formInput, images: mapCopy })
+  }
+
   function handleImageUploadData(id: string, imageData: Partial<ImageData>) {
     const mapCopy = new Map(formInput.images)
     const image = mapCopy.get(id)
@@ -159,6 +165,7 @@ export function DonationForm({ submit, categories }: Props) {
           id={key}
           errorMsg={error}
           imgDescription={value?.altText ?? ''}
+          onDelete={deleteImage}
           onImageDataChange={handleImageUploadData}
         />
       )
@@ -262,7 +269,7 @@ export function DonationForm({ submit, categories }: Props) {
         <GridItem colSpan={{ base: 1, md: 2 }}>
           <Grid
             gridGap={4}
-            gridTemplateColumns={{ base: '1fr', md: '1fr 1fr' }}
+            gridTemplateColumns={{ base: '1fr', md: '1fr 1fr 1fr' }}
           >
             {imageUploadElements}
           </Grid>
